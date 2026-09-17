@@ -317,6 +317,15 @@
                 </div>
             </div>
 
+            <!-- 새로 추가된 커미션 워터마크 영역 -->
+            <div class="sub-group">
+                <span class="sub-group-title">워터마크 (커미션 정보)</span>
+                <div class="input-group mb-0">
+                    <label>커미션주 이름 (쉼표(,)로 구분하여 여러 명 입력 가능)</label>
+                    <input type="text" id="commissioner_name" placeholder="예: 닉네임1, 닉네임2" oninput="updatePreview()">
+                </div>
+            </div>
+
             <!-- ==========================================
                  3. 플레이리스트 내용
             =========================================== -->
@@ -388,6 +397,9 @@
                 <div id="out_bg_img" class="absolute inset-[-5%] z-10 bg-cover bg-center" style="filter: blur(8px); opacity: 0.6;"></div>
                 <!-- 패턴 오버레이 -->
                 <div id="out_bg_pattern" class="absolute inset-0 z-20"></div>
+
+                <!-- 커미션주 워터마크 표시 (우측 상단) -->
+                <div id="out_commissioner" class="absolute top-10 z-50 text-[11px] font-medium tracking-[0.15em] opacity-50 transition-all duration-300 hidden" style="display: none;"></div>
 
                 <!-- 곡 리스트 컨텐츠 -->
                 <div id="out_playlist_inner" class="absolute inset-0 z-30 flex flex-col justify-center py-12 pr-16 pl-[260px] overflow-visible transition-all duration-300">
@@ -688,8 +700,29 @@
             const textClass = isDark ? 'text-white' : 'text-zinc-800';
             const subTextClass = isDark ? 'text-zinc-300' : 'text-zinc-500';
             const boxClass = isDark ? 'glass-box-dark' : 'glass-box';
+
+            /* --- 4. 커미션 워터마크 렌더링 --- */
+            const commissionerInput = document.getElementById('commissioner_name').value.trim();
+            const commissionerEl = document.getElementById('out_commissioner');
             
-            /* --- 4. 플레이리스트 렌더링 --- */
+            if (commissionerInput) {
+                // 쉼표로 분리하여 양옆 공백 제거 후 ' │ ' 로 묶어주기
+                const names = commissionerInput.split(',').map(n => n.trim()).filter(n => n);
+                if (names.length > 0) {
+                    commissionerEl.innerText = `ⓒ ${names.join(' │ ')}`;
+                    commissionerEl.style.display = 'block';
+                } else {
+                    commissionerEl.style.display = 'none';
+                }
+            } else {
+                commissionerEl.style.display = 'none';
+            }
+
+            // 레이아웃이 반전되면 우측이 아닌 좌측 상단으로 이동시켜 텍스트가 잘리지 않게 조정
+            const commPosClass = state.layoutReversed ? 'left-12' : 'right-12';
+            commissionerEl.className = `absolute top-10 z-50 text-[11px] font-medium tracking-[0.15em] opacity-50 transition-all duration-300 ${plFont} ${textClass} ${commPosClass}`;
+            
+            /* --- 5. 플레이리스트 렌더링 --- */
             // 형광펜 색상 rgba 변환
             const hlHex = document.getElementById('hl_color').value;
             const hlR = parseInt(hlHex.substr(1,2), 16);
