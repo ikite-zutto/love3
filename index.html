@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>페어 플레이 리스트 메이커 (7:5 비율)</title>
+    <title>페어 플레이 리스트 메이커</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js"></script>
     
@@ -103,7 +103,7 @@
     <!-- 왼쪽(모바일은 하단): 에디터 패널 -->
     <aside id="editor-aside" class="w-full h-[55dvh] lg:w-[420px] lg:h-full bg-white border-t lg:border-t-0 lg:border-r border-zinc-200 flex flex-col shadow-xl z-50 shrink-0">
         <div class="p-4 lg:p-5 bg-zinc-900 text-white flex justify-between items-center shrink-0">
-            <h1 class="text-base lg:text-lg font-black tracking-wide">페어 플리 메이커</h1>
+            <h1 class="text-base lg:text-lg font-black tracking-wide">페어 플레이 리스트 메이커</h1>
             <button onclick="downloadImage()" class="bg-zinc-700 hover:bg-zinc-600 text-white text-xs font-bold py-2 px-3 lg:px-4 rounded-md transition-colors shadow-sm">이미지 저장</button>
         </div>
 
@@ -375,6 +375,9 @@
                     <p id="out_pair_sub" class="text-white text-shadow-heavy opacity-90 break-keep whitespace-pre-line">여기에 서브 소개글을 입력하세요</p>
                     <p id="out_pair_catch" class="text-white text-shadow-heavy whitespace-pre-line opacity-80 break-keep">여기에 캐치 프레이즈를 입력하세요</p>
                 </div>
+
+                <!-- 커미션주 워터마크 표시 (페어 이미지 영역 하단으로 완전히 이동) -->
+                <div id="out_commissioner" class="absolute bottom-6 z-30 text-[10px] text-white/60 font-medium tracking-[0.15em] whitespace-nowrap hidden" style="display: none;"></div>
             </div>
 
             <!-- [중앙 레코드판 디바이더] -->
@@ -397,10 +400,6 @@
                 <div id="out_bg_img" class="absolute inset-[-5%] z-10 bg-cover bg-center" style="filter: blur(8px); opacity: 0.6;"></div>
                 <!-- 패턴 오버레이 -->
                 <div id="out_bg_pattern" class="absolute inset-0 z-20"></div>
-
-                <!-- 커미션주 워터마크 표시 (우측 상단) -->
-                <!-- 클래스에서 top-10을 top-6으로 수정하고 whitespace-nowrap을 추가하여 메인 곡과 겹치지 않게 조절 -->
-                <div id="out_commissioner" class="absolute top-6 z-50 text-[11px] font-medium tracking-[0.15em] opacity-50 transition-all duration-300 whitespace-nowrap hidden" style="display: none;"></div>
 
                 <!-- 곡 리스트 컨텐츠 -->
                 <div id="out_playlist_inner" class="absolute inset-0 z-30 flex flex-col justify-center py-12 pr-16 pl-[260px] overflow-visible transition-all duration-300">
@@ -702,7 +701,7 @@
             const subTextClass = isDark ? 'text-zinc-300' : 'text-zinc-500';
             const boxClass = isDark ? 'glass-box-dark' : 'glass-box';
 
-            /* --- 4. 커미션 워터마크 렌더링 --- */
+            /* --- 4. 커미션 워터마크 렌더링 (왼쪽 페어 이미지 하단으로 이동) --- */
             const commissionerInput = document.getElementById('commissioner_name').value.trim();
             const commissionerEl = document.getElementById('out_commissioner');
             
@@ -719,10 +718,18 @@
                 commissionerEl.style.display = 'none';
             }
 
-            // 레이아웃이 반전되면 우측이 아닌 좌측 상단으로 이동시켜 텍스트가 잘리지 않게 조정
-            // top-10을 top-6으로 수정하여 메인 테마곡 박스와 겹치지 않도록 위로 바짝 올림
-            const commPosClass = state.layoutReversed ? 'left-10' : 'right-10';
-            commissionerEl.className = `absolute top-6 z-50 text-[11px] font-medium tracking-[0.15em] opacity-50 transition-all duration-300 whitespace-nowrap ${plFont} ${textClass} ${commPosClass}`;
+            // 워터마크 위치를 페어 텍스트 정렬(좌/우/가운데) 방향에 맞춤
+            let commAlignClass = 'left-8';
+            let commTransform = '';
+            if (textAlign === 'text-center') {
+                commAlignClass = 'left-1/2';
+                commTransform = '-translate-x-1/2';
+            } else if (textAlign === 'text-right') {
+                commAlignClass = 'right-8';
+            }
+
+            // 플리 폰트와 상관없이 페어 이미지 쪽이므로 흰색 반투명 텍스트 적용 (그라데이션 덕분에 잘 보임)
+            commissionerEl.className = `absolute bottom-6 z-30 text-[10px] text-white/60 font-medium tracking-[0.15em] whitespace-nowrap transition-all duration-300 ${fontBody} ${commAlignClass} ${commTransform}`;
             
             /* --- 5. 플레이리스트 렌더링 --- */
             // 형광펜 색상 rgba 변환
