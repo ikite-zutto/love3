@@ -190,8 +190,8 @@
                     </select>
                 </div>
                 
-                <!-- 새로 추가된 폰트 색상 & 이미지 하단 그라데이션 색상 선택 영역 -->
-                <div class="grid grid-cols-2 gap-2 mb-3">
+                <!-- 새로 추가된 폰트 색상 & 이미지 하단 그라데이션 색상/세기 선택 영역 -->
+                <div class="grid grid-cols-2 gap-2 mb-2">
                     <div class="flex flex-col gap-1">
                         <span class="text-[10px] text-zinc-500 font-bold">폰트 색상</span>
                         <input type="color" id="pair_text_color" value="#ffffff" class="h-8 w-full p-1 cursor-pointer border-zinc-200 rounded" oninput="updatePreview()">
@@ -200,6 +200,10 @@
                         <span class="text-[10px] text-zinc-500 font-bold">하단 그라데이션 색상</span>
                         <input type="color" id="pair_overlay_color" value="#000000" class="h-8 w-full p-1 cursor-pointer border-zinc-200 rounded" oninput="updatePreview()">
                     </div>
+                </div>
+                <div class="flex justify-between items-center mb-3">
+                    <span class="text-[10px] font-bold text-zinc-600">그라데이션 진하기</span>
+                    <input type="range" id="pair_overlay_opacity" min="0" max="100" value="95" class="w-2/3" oninput="updatePreview()">
                 </div>
                 
                 <div class="mb-1">
@@ -378,7 +382,7 @@
                 <div id="out_pair_img" class="absolute inset-0 bg-cover bg-center"></div>
                 
                 <!-- 텍스트 보호용 짙은 그라데이션 (ID 추가됨) -->
-                <div id="out_pair_gradient" class="absolute bottom-0 left-0 w-full h-[60%] pointer-events-none z-10" style="background: linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.4), transparent);"></div>
+                <div id="out_pair_gradient" class="absolute bottom-0 left-0 w-full h-[60%] pointer-events-none z-10" style="background: linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0.47), transparent);"></div>
                 
                 <!-- 세분화된 텍스트 영역 -->
                 <div class="absolute bottom-16 left-0 w-full px-8 z-20 flex flex-col" id="out_left_text_container">
@@ -688,9 +692,10 @@
             const textAlign = document.getElementById('text_align').value;
             const textShadow = document.getElementById('text_shadow').value;
             
-            // 사용자가 선택한 폰트 색상 및 그라데이션 색상
+            // 사용자가 선택한 폰트 색상 및 그라데이션 색상/세기
             const textColor = document.getElementById('pair_text_color').value;
             const overlayColor = document.getElementById('pair_overlay_color').value;
+            const overlayOpacityVal = document.getElementById('pair_overlay_opacity').value / 100;
             
             containerEl.className = `absolute bottom-16 left-0 w-full px-8 z-20 flex flex-col ${textAlign}`;
             
@@ -702,7 +707,10 @@
                 return `${r}, ${g}, ${b}`;
             };
             const overlayRgb = hexToRgb(overlayColor);
-            document.getElementById('out_pair_gradient').style.background = `linear-gradient(to top, rgba(${overlayRgb}, 0.9), rgba(${overlayRgb}, 0.4), transparent)`;
+            
+            // 중간 지점의 투명도는 하단 최대 투명도의 절반 정도로 설정하여 자연스럽게 퍼지게 함
+            const midOpacity = (overlayOpacityVal * 0.5).toFixed(2);
+            document.getElementById('out_pair_gradient').style.background = `linear-gradient(to top, rgba(${overlayRgb}, ${overlayOpacityVal}), rgba(${overlayRgb}, ${midOpacity}), transparent)`;
 
             [centerEl, titleEl, subEl, catchEl].forEach(el => {
                 // 폰트 색상 적용
