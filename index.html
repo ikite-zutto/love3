@@ -92,20 +92,24 @@
         .shape-main { border-radius: 50px 50px 50px 16px; }
         .shape-sub { border-radius: 40px 16px 40px 40px; }
         .shape-sub-alt { border-radius: 16px 40px 40px 40px; } 
+
+        /* 모바일 전환 애니메이션 부드럽게 */
+        aside, main { transition: height 0.3s ease, flex 0.3s ease; }
     </style>
 </head>
-<body class="flex h-screen w-screen">
+<!-- 모바일에서는 세로 배치(에디터 아래, 뷰어 위), 데스크탑(lg)에서는 가로 배치 유지 -->
+<body class="flex flex-col-reverse lg:flex-row h-[100dvh] w-screen">
 
-    <!-- 왼쪽: 에디터 패널 -->
-    <aside class="w-[420px] h-full bg-white border-r border-zinc-200 flex flex-col shadow-xl z-50 shrink-0">
-        <div class="p-5 bg-zinc-900 text-white flex justify-between items-center">
-            <h1 class="text-lg font-black tracking-wide">페어 플레이 리스트 메이커</h1>
-            <button onclick="downloadImage()" class="bg-zinc-700 hover:bg-zinc-600 text-white text-xs font-bold py-2 px-4 rounded-md transition-colors shadow-sm">이미지 저장</button>
+    <!-- 왼쪽(모바일은 하단): 에디터 패널 -->
+    <aside id="editor-aside" class="w-full h-[55dvh] lg:w-[420px] lg:h-full bg-white border-t lg:border-t-0 lg:border-r border-zinc-200 flex flex-col shadow-xl z-50 shrink-0">
+        <div class="p-4 lg:p-5 bg-zinc-900 text-white flex justify-between items-center shrink-0">
+            <h1 class="text-base lg:text-lg font-black tracking-wide">페어 플리 메이커</h1>
+            <button onclick="downloadImage()" class="bg-zinc-700 hover:bg-zinc-600 text-white text-xs font-bold py-2 px-3 lg:px-4 rounded-md transition-colors shadow-sm">이미지 저장</button>
         </div>
 
-        <div class="flex-1 overflow-y-auto p-6 pb-20 custom-scroll" id="editor-form">
+        <div class="flex-1 overflow-y-auto p-4 lg:p-6 pb-20 custom-scroll" id="editor-form">
             
-            <!-- 레이아웃 반전 버튼 (세련된 디자인으로 변경) -->
+            <!-- 레이아웃 반전 버튼 -->
             <button onclick="toggleLayout()" class="w-full mb-4 bg-zinc-100 hover:bg-zinc-200 border border-zinc-200 text-zinc-600 font-bold py-2.5 rounded-md text-xs transition-colors flex items-center justify-center gap-2 tracking-wider">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
                 LAYOUT SWAP
@@ -114,7 +118,7 @@
             <!-- ==========================================
                  1. 페어 이미지 영역
             =========================================== -->
-            <div class="section-title mt-6">1. 페어 이미지 영역</div>
+            <div class="section-title mt-2 lg:mt-6">1. 페어 이미지 영역</div>
             
             <div class="sub-group">
                 <span class="sub-group-title">이미지 설정</span>
@@ -335,8 +339,14 @@
         </div>
     </aside>
 
-    <!-- 오른쪽: 미리보기 패널 -->
-    <main class="flex-1 bg-zinc-800 p-8 relative overflow-hidden" id="capture-area-container">
+    <!-- 오른쪽(모바일은 상단): 미리보기 패널 -->
+    <main id="preview-main" class="w-full h-[45dvh] lg:flex-1 lg:h-full bg-zinc-800 p-2 lg:p-8 relative overflow-hidden flex items-center justify-center shrink-0">
+        
+        <!-- 모바일 전용 토글 버튼 (화면 크게보기) -->
+        <button id="mobile-preview-toggle" onclick="toggleMobilePreview()" class="lg:hidden absolute bottom-3 right-3 bg-black/60 hover:bg-black/80 text-white px-4 py-1.5 rounded-full text-[11px] font-bold z-50 backdrop-blur-md shadow-lg border border-white/20 transition-all">
+            🔍 크게 보기
+        </button>
+
         <!-- 캡처될 실제 영역 (1400 x 1000 - 7:5 비율) -->
         <div id="capture-target" class="preview-wrapper bg-white">
             
@@ -408,18 +418,48 @@
 
         const EMPTY_COVER = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiM4MDgwODAiLz48L3N2Zz4=';
 
-        // 창 크기에 맞춰 미리보기 스케일링
+        // 창 크기에 맞춰 미리보기 스케일링 (모바일 패딩 대응)
         function resizePreview() {
-            const container = document.getElementById('capture-area-container');
+            const container = document.getElementById('preview-main');
             const target = document.getElementById('capture-target');
             
-            const scaleX = (container.clientWidth - 40) / 1400;
-            const scaleY = (container.clientHeight - 40) / 1000;
+            // 모바일일 땐 여백을 줄여서 더 크게 보이게 설정
+            const padding = window.innerWidth < 1024 ? 16 : 40;
+            
+            const scaleX = (container.clientWidth - padding) / 1400;
+            const scaleY = (container.clientHeight - padding) / 1000;
             const scale = Math.min(scaleX, scaleY, 1); 
             
             target.style.transform = `scale(${scale})`;
         }
         window.addEventListener('resize', resizePreview);
+
+        // 모바일 전용: 미리보기 크게보기/편집하기 토글 로직
+        let isMobilePreviewExpanded = false;
+        function toggleMobilePreview() {
+            const editor = document.getElementById('editor-aside');
+            const preview = document.getElementById('preview-main');
+            const btn = document.getElementById('mobile-preview-toggle');
+
+            isMobilePreviewExpanded = !isMobilePreviewExpanded;
+
+            if (isMobilePreviewExpanded) {
+                // 미리보기 전체화면
+                editor.classList.replace('h-[55dvh]', 'h-[0dvh]');
+                editor.classList.add('overflow-hidden'); // 닫힐때 내용 안보이게
+                preview.classList.replace('h-[45dvh]', 'h-[100dvh]');
+                btn.innerHTML = '✏️ 편집하기';
+            } else {
+                // 원래 분할 화면으로 복구
+                editor.classList.remove('overflow-hidden');
+                editor.classList.replace('h-[0dvh]', 'h-[55dvh]');
+                preview.classList.replace('h-[100dvh]', 'h-[45dvh]');
+                btn.innerHTML = '🔍 크게 보기';
+            }
+            
+            // 애니메이션이 끝난 후 스케일 재계산
+            setTimeout(resizePreview, 310);
+        }
 
         // 레이아웃 반전 토글
         function toggleLayout() {
