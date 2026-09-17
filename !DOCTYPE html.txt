@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>페어 플리 메이커 (7:5 비율)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js"></script>
+    
+    <!-- 다양한 폰트 로드 -->
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Great+Vibes&family=Noto+Serif+KR:wght@400;700;900&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2212@1.0/KCC-eunyoung.woff2" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Pretendard', sans-serif; overflow: hidden; background-color: #f4f4f5; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f4f4f5; }
+        ::-webkit-scrollbar-thumb { background: #d4d4d8; border-radius: 4px; }
+        
+        /* 빌더 UI 스타일 */
+        .section-title { font-weight: 800; font-size: 1.1rem; color: #18181b; margin: 2.5rem 0 1rem 0; padding-bottom: 0.5rem; border-bottom: 2px solid #18181b; display: flex; justify-content: space-between; align-items: center; letter-spacing: -0.02em; }
+        .sub-group { background: #fafafa; border: 1px solid #e4e4e7; border-radius: 0.5rem; padding: 1rem; margin-bottom: 1rem; }
+        .sub-group-title { font-size: 0.75rem; font-weight: 800; color: #3f3f46; margin-bottom: 0.8rem; display: block; border-bottom: 1px dashed #d4d4d8; padding-bottom: 0.4rem; }
+        
+        .input-group { margin-bottom: 1rem; }
+        .input-group:last-child { margin-bottom: 0; }
+        .input-group label { display: block; font-size: 0.75rem; font-weight: 700; color: #52525b; margin-bottom: 0.4rem; }
+        .input-group input[type="text"], .input-group textarea, .input-group select, .input-group input[type="color"], .input-group input[type="range"] { width: 100%; padding: 0.6rem; border: 1px solid #d4d4d8; border-radius: 0.4rem; font-size: 0.85rem; background: #fff; outline: none; transition: 0.2s; }
+        .input-group input[type="text"]:focus, .input-group textarea:focus { border-color: #18181b; box-shadow: 0 0 0 1px #18181b; }
+        
+        .btn-outline { background: #fff; border: 1px solid #d4d4d8; color: #3f3f46; padding: 0.4rem 0.6rem; border-radius: 0.3rem; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .btn-outline:hover { background: #f4f4f5; border-color: #a1a1aa; color: #18181b; }
+
+        /* 미리보기 캔버스 (정확한 7:5 비율 = 1400x1000) */
+        #capture-area-container { display: flex; align-items: center; justify-content: center; }
+        .preview-wrapper {
+            width: 1400px;
+            height: 1000px;
+            position: relative;
+            transform-origin: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-shrink: 0;
+            transition: flex-direction 0.3s ease;
+        }
+
+        /* 폰트 클래스 */
+        .font-pretendard { font-family: 'Pretendard', sans-serif; }
+        .font-notoserif { font-family: 'Noto Serif KR', serif; }
+        .font-gowun { font-family: 'Gowun Batang', serif; }
+        .font-gmarket { font-family: 'GmarketSansMedium', sans-serif; }
+        .font-caveat { font-family: 'Caveat', cursive; }
+        .font-greatvibes { font-family: 'Great Vibes', cursive; }
+        .font-eunyoung { font-family: 'KCC-eunyoung', cursive; }
+        
+        /* 텍스트 그림자 */
+        .text-shadow-heavy { text-shadow: 0 4px 20px rgba(0,0,0,0.9), 0 2px 8px rgba(0,0,0,0.8); }
+        .text-shadow-light { text-shadow: 0 2px 10px rgba(255,255,255,0.8); }
+
+        /* 패턴 오버레이 */
+        .pattern-dot-dense { background-image: radial-gradient(rgba(255,255,255,0.2) 1px, transparent 1px); background-size: 8px 8px; }
+        .pattern-dot-loose { background-image: radial-gradient(rgba(255,255,255,0.15) 1.5px, transparent 1.5px); background-size: 20px 20px; }
+        .pattern-grid { background-image: linear-gradient(to right, rgba(255,255,255,0.07) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.07) 1px, transparent 1px); background-size: 24px 24px; }
+        .pattern-diagonal { background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.05) 10px, rgba(255,255,255,0.05) 11px); }
+        
+        .pattern-dot-dense-dark { background-image: radial-gradient(rgba(0,0,0,0.2) 1px, transparent 1px); background-size: 8px 8px; }
+        .pattern-dot-loose-dark { background-image: radial-gradient(rgba(0,0,0,0.15) 1.5px, transparent 1.5px); background-size: 20px 20px; }
+        .pattern-grid-dark { background-image: linear-gradient(to right, rgba(0,0,0,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(0,0,0,0.05) 1px, transparent 1px); background-size: 24px 24px; }
+        .pattern-diagonal-dark { background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,0.05) 10px, rgba(0,0,0,0.05) 11px); }
+
+        /* 화이트 톤 글래스모피즘 박스 */
+        .glass-box {
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+        }
+        .glass-box-dark {
+            background: rgba(0, 0, 0, 0.35);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        }
+
+        /* 비대칭 둥근 모서리 */
+        .shape-main { border-radius: 50px 50px 50px 16px; }
+        .shape-sub { border-radius: 40px 16px 40px 40px; }
+        .shape-sub-alt { border-radius: 16px 40px 40px 40px; } 
+    </style>
+</head>
+<body class="flex h-screen w-screen">
+
+    <!-- 왼쪽: 에디터 패널 -->
+    <aside class="w-[420px] h-full bg-white border-r border-zinc-200 flex flex-col shadow-xl z-50 shrink-0">
+        <div class="p-5 bg-zinc-900 text-white flex justify-between items-center">
+            <h1 class="text-lg font-black tracking-wide">페어 플리 메이커</h1>
+            <button onclick="downloadImage()" class="bg-zinc-700 hover:bg-zinc-600 text-white text-xs font-bold py-2 px-4 rounded-md transition-colors shadow-sm">이미지 저장</button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-6 pb-20 custom-scroll" id="editor-form">
+            
+            <!-- 레이아웃 반전 버튼 (세련된 디자인으로 변경) -->
+            <button onclick="toggleLayout()" class="w-full mb-4 bg-zinc-100 hover:bg-zinc-200 border border-zinc-200 text-zinc-600 font-bold py-2.5 rounded-md text-xs transition-colors flex items-center justify-center gap-2 tracking-wider">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                LAYOUT SWAP
+            </button>
+
+            <!-- ==========================================
+                 1. 페어 이미지 영역
+            =========================================== -->
+            <div class="section-title mt-6">1. 페어 이미지 영역</div>
+            
+            <div class="sub-group">
+                <span class="sub-group-title">이미지 설정</span>
+                <div class="input-group">
+                    <label>페어 바탕 이미지 첨부</label>
+                    <div class="flex gap-2">
+                        <input type="file" id="f_pair_img" accept="image/*" class="hidden" onchange="handleFileUpload(event, 'pair_img')">
+                        <button type="button" onclick="document.getElementById('f_pair_img').click()" class="btn-outline w-full py-2">이미지 첨부하기</button>
+                        <button type="button" onclick="removeImage('pair_img')" class="btn-outline text-red-500">삭제</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sub-group">
+                <span class="sub-group-title">텍스트 내용 입력</span>
+                <div class="input-group">
+                    <label>센터레터 (제목 위 작은 글씨)</label>
+                    <input type="text" id="pair_center" value="센터레터를 입력하세요" oninput="updatePreview()">
+                </div>
+                <div class="input-group">
+                    <label>메인 제목 (줄바꿈 가능)</label>
+                    <textarea id="pair_title" class="h-16" oninput="updatePreview()">여기에 메인 제목을 입력하세요</textarea>
+                </div>
+                <div class="input-group">
+                    <label>서브 소개글</label>
+                    <textarea id="pair_sub" class="h-16" oninput="updatePreview()">여기에 서브 소개글을 입력하세요</textarea>
+                </div>
+                <div class="input-group">
+                    <label>캐치 프레이즈</label>
+                    <textarea id="pair_catch" class="h-16" oninput="updatePreview()">여기에 캐치 프레이즈를 입력하세요</textarea>
+                </div>
+            </div>
+
+            <div class="sub-group">
+                <span class="sub-group-title">텍스트 스타일 설정</span>
+                <div class="grid grid-cols-2 gap-2 mb-3">
+                    <div class="flex flex-col gap-1">
+                        <span class="text-[10px] text-zinc-500 font-bold">제목 폰트</span>
+                        <select id="font_title" onchange="updatePreview()" class="text-xs p-1.5 border rounded">
+                            <option value="font-pretendard" selected>프리텐다드</option>
+                            <option value="font-notoserif">본명조</option>
+                            <option value="font-gowun">고운바탕</option>
+                            <option value="font-gmarket">지마켓산스</option>
+                            <option value="font-eunyoung">KCC은영체</option>
+                            <option value="font-greatvibes">Great Vibes</option>
+                            <option value="font-caveat">Caveat</option>
+                        </select>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <span class="text-[10px] text-zinc-500 font-bold">본문 폰트</span>
+                        <select id="font_body" onchange="updatePreview()" class="text-xs p-1.5 border rounded">
+                            <option value="font-pretendard" selected>프리텐다드</option>
+                            <option value="font-notoserif">본명조</option>
+                            <option value="font-gowun">고운바탕</option>
+                            <option value="font-gmarket">지마켓산스</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-2 mb-3">
+                    <select id="font_style" onchange="updatePreview()" class="text-xs p-1.5 border rounded">
+                        <option value="normal">기본 두께</option>
+                        <option value="italic">기울임 (Italic)</option>
+                        <option value="bold" selected>굵게 (Bold)</option>
+                        <option value="bold-italic">굵고 기울임</option>
+                    </select>
+                    <select id="text_align" onchange="updatePreview()" class="text-xs p-1.5 border rounded">
+                        <option value="text-center">가운데 정렬</option>
+                        <option value="text-left">왼쪽 정렬</option>
+                        <option value="text-right">오른쪽 정렬</option>
+                    </select>
+                </div>
+                <div class="mb-1">
+                    <select id="text_shadow" onchange="updatePreview()" class="text-xs p-1.5 border rounded w-full">
+                        <option value="dark">어두운 그림자 (밝은 이미지용)</option>
+                        <option value="light">밝은 테두리 (어두운 이미지용)</option>
+                        <option value="none">그림자 없음</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="sub-group">
+                <span class="sub-group-title">상세 간격 조절</span>
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-[10px] font-bold text-zinc-600">센터레터 크기</span>
+                        <input type="range" id="size_center" min="10" max="40" value="14" class="w-2/3" oninput="updatePreview()">
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-[10px] font-bold text-zinc-600">센터레터 상하 위치</span>
+                        <input type="range" id="pos_center" min="-100" max="100" value="0" class="w-2/3" oninput="updatePreview()">
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-[10px] font-bold text-zinc-600">제목 크기</span>
+                        <input type="range" id="size_title" min="20" max="100" value="56" class="w-2/3" oninput="updatePreview()">
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-[10px] font-bold text-zinc-600">본문 크기</span>
+                        <input type="range" id="size_body" min="12" max="60" value="24" class="w-2/3" oninput="updatePreview()">
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-[10px] font-bold text-zinc-600">자간 (글자간격)</span>
+                        <input type="range" id="spacing_letter" min="-0.1" max="0.5" step="0.01" value="0" class="w-2/3" oninput="updatePreview()">
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-[10px] font-bold text-zinc-600">행간 (줄간격)</span>
+                        <input type="range" id="spacing_line" min="1" max="3" step="0.1" value="1.4" class="w-2/3" oninput="updatePreview()">
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-[10px] font-bold text-zinc-600">문단 간격</span>
+                        <input type="range" id="spacing_para" min="0" max="80" value="16" class="w-2/3" oninput="updatePreview()">
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==========================================
+                 2. 플리 배경 영역
+            =========================================== -->
+            <div class="section-title mt-10">2. 플리 배경 영역</div>
+            
+            <div class="sub-group">
+                <span class="sub-group-title">배경 설정</span>
+                <div class="input-group">
+                    <label>플리 배경 이미지 첨부</label>
+                    <div class="flex gap-2 mb-3">
+                        <input type="file" id="f_bg_img" accept="image/*" class="hidden" onchange="handleFileUpload(event, 'bg_img')">
+                        <button type="button" onclick="document.getElementById('f_bg_img').click()" class="btn-outline w-full py-1.5">이미지 첨부하기</button>
+                        <button type="button" onclick="removeImage('bg_img')" class="btn-outline text-red-500 py-1.5">삭제</button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 mb-3">
+                    <div class="input-group mb-0">
+                        <label>배경 색상 (단색)</label>
+                        <input type="color" id="bg_color" value="#e4e4e7" class="h-10 p-1 cursor-pointer w-full rounded-md border-zinc-200" oninput="updatePreview()">
+                    </div>
+                    <div class="input-group mb-0">
+                        <label>글씨 & 박스 톤</label>
+                        <select id="theme_mode" onchange="updatePreview()">
+                            <option value="light">화이트 유리 (어두운 글씨)</option>
+                            <option value="dark">블랙 유리 (밝은 글씨)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="input-group mb-0">
+                    <label>배경 패턴 오버레이</label>
+                    <select id="bg_pattern" onchange="updatePreview()">
+                        <option value="none">패턴 없음</option>
+                        <option value="dot-dense">촘촘한 도트</option>
+                        <option value="dot-loose">성긴 도트</option>
+                        <option value="grid">격자 무늬</option>
+                        <option value="diagonal">사선 패턴</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="sub-group">
+                <span class="sub-group-title">레코드판 설정</span>
+                <div class="input-group mb-3">
+                    <label>중앙 라벨 이미지 (선택)</label>
+                    <div class="flex gap-2">
+                        <input type="file" id="f_vinyl_img" accept="image/*" class="hidden" onchange="handleFileUpload(event, 'vinyl_img')">
+                        <button type="button" onclick="document.getElementById('f_vinyl_img').click()" class="btn-outline w-full py-1.5 text-xs">사진 첨부</button>
+                        <button type="button" onclick="removeImage('vinyl_img')" class="btn-outline text-red-500 py-1.5 text-xs">삭제</button>
+                    </div>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-xs font-bold text-zinc-600">사진이 없을 때 기본 색상</span>
+                    <input type="color" id="vinyl_color" value="#ff5555" class="h-8 w-1/2 p-1 cursor-pointer border-zinc-200 rounded" oninput="updatePreview()">
+                </div>
+            </div>
+
+            <div class="sub-group">
+                <span class="sub-group-title">플리 텍스트 스타일</span>
+                <div class="grid grid-cols-2 gap-2 mb-3">
+                    <select id="pl_font_family" onchange="updatePreview()" class="text-xs p-1.5 border rounded w-full">
+                        <option value="font-pretendard" selected>프리텐다드</option>
+                        <option value="font-notoserif">본명조</option>
+                        <option value="font-gowun">고운바탕</option>
+                        <option value="font-gmarket">지마켓산스</option>
+                    </select>
+                    <select id="pl_font_style" onchange="updatePreview()" class="text-xs p-1.5 border rounded w-full">
+                        <option value="normal">기본 두께</option>
+                        <option value="italic">기울임 (Italic)</option>
+                        <option value="bold">굵게 (Bold)</option>
+                        <option value="bold-italic">굵고 기울임</option>
+                    </select>
+                </div>
+                <div class="space-y-3 border-t border-zinc-200 pt-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-[10px] font-bold text-zinc-600">자간 (글자간격)</span>
+                        <input type="range" id="pl_spacing_letter" min="-0.1" max="0.3" step="0.01" value="0" class="w-2/3" oninput="updatePreview()">
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-[10px] font-bold text-zinc-600">행간 (가사 줄간격)</span>
+                        <input type="range" id="pl_spacing_line" min="1" max="2.5" step="0.1" value="1.6" class="w-2/3" oninput="updatePreview()">
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==========================================
+                 3. 플레이리스트 내용
+            =========================================== -->
+            <div class="section-title mt-10">3. 플레이리스트 내용</div>
+            
+            <div class="bg-zinc-100 border border-zinc-200 p-3 rounded-lg mb-4">
+                <p class="text-[11px] text-zinc-800 font-bold mb-2">가사 형광펜 하이라이트 기능</p>
+                <p class="text-[10px] text-zinc-600 mb-3">가사 입력 시 문장 맨 앞에 <strong class="text-red-500">*</strong> 기호를 붙이면 그 줄에 형광펜이 그어집니다.<br>(예: *여기에 가사를 입력하세요)</p>
+                <div class="flex justify-between items-center border-t border-zinc-200 pt-2">
+                    <span class="text-[10px] font-bold text-zinc-800">형광펜 색상</span>
+                    <input type="color" id="hl_color" value="#ffeb3b" class="h-6 w-1/2 p-0 cursor-pointer border-zinc-200" oninput="updatePreview()">
+                </div>
+            </div>
+
+            <div id="playlist-editor" class="space-y-4">
+                <!-- JS로 동적 렌더링 됨 -->
+            </div>
+            
+            <button type="button" onclick="addSong()" class="w-full mt-4 bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-3 rounded-lg text-sm transition-colors shadow-sm">+ 서브 곡 추가하기</button>
+        </div>
+    </aside>
+
+    <!-- 오른쪽: 미리보기 패널 -->
+    <main class="flex-1 bg-zinc-800 p-8 relative overflow-hidden" id="capture-area-container">
+        <!-- 캡처될 실제 영역 (1400 x 1000 - 7:5 비율) -->
+        <div id="capture-target" class="preview-wrapper bg-white">
+            
+            <!-- [왼쪽 영역] 페어 이미지 (30% 너비) -->
+            <div id="out_left_panel" class="relative w-[30%] h-full shrink-0 overflow-hidden bg-zinc-200 z-40 shadow-[10px_0_25px_rgba(0,0,0,0.25)] transition-shadow duration-300">
+                
+                <!-- 페어 배경 이미지 -->
+                <div id="out_pair_img" class="absolute inset-0 bg-cover bg-center"></div>
+                
+                <!-- 텍스트 보호용 짙은 그라데이션 -->
+                <div class="absolute bottom-0 left-0 w-full h-[60%] bg-gradient-to-t from-black/90 via-black/40 to-transparent pointer-events-none z-10"></div>
+                
+                <!-- 세분화된 텍스트 영역 -->
+                <div class="absolute bottom-16 left-0 w-full px-8 z-20 flex flex-col" id="out_left_text_container">
+                    <p id="out_pair_center" class="text-white text-shadow-heavy opacity-90 break-keep">센터레터를 입력하세요</p>
+                    <h1 id="out_pair_title" class="text-white text-shadow-heavy break-keep whitespace-pre-line">여기에 메인 제목을 입력하세요</h1>
+                    <p id="out_pair_sub" class="text-white text-shadow-heavy opacity-90 break-keep whitespace-pre-line">여기에 서브 소개글을 입력하세요</p>
+                    <p id="out_pair_catch" class="text-white text-shadow-heavy whitespace-pre-line opacity-80 break-keep">여기에 캐치 프레이즈를 입력하세요</p>
+                </div>
+            </div>
+
+            <!-- [중앙 레코드판 디바이더] -->
+            <div id="out_vinyl_divider" class="absolute top-1/2 left-[30%] z-30 -translate-x-1/2 -translate-y-1/2 w-[450px] h-[450px] transition-all duration-300">
+                <!-- 정지된 레코드판 본체 -->
+                <div class="w-full h-full rounded-full bg-[#111] shadow-[15px_0_30px_rgba(0,0,0,0.5)] flex items-center justify-center" style="background-image: repeating-radial-gradient(#111, #111 4px, #222 5px, #111 6px);">
+                    <!-- 레코드 라벨 (가운데 원 - 사진 첨부 가능) -->
+                    <div class="w-[140px] h-[140px] rounded-full border-2 border-[#111] flex items-center justify-center bg-cover bg-center" id="out_vinyl_label" style="background-color: #ff5555;">
+                        <!-- 뚫린 구멍 -->
+                        <div class="w-[18px] h-[18px] rounded-full bg-[#e4e4e7]" id="out_vinyl_hole"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- [오른쪽 영역] 플레이리스트 (70% 너비) -->
+            <div id="out_right_panel" class="relative w-[70%] h-full shrink-0 overflow-hidden">
+                <!-- 플리 배경색 -->
+                <div id="out_bg_color" class="absolute inset-0 z-0 bg-[#e4e4e7]"></div>
+                <!-- 플리 배경 이미지 (블러 처리됨) -->
+                <div id="out_bg_img" class="absolute inset-[-5%] z-10 bg-cover bg-center" style="filter: blur(8px); opacity: 0.6;"></div>
+                <!-- 패턴 오버레이 -->
+                <div id="out_bg_pattern" class="absolute inset-0 z-20"></div>
+
+                <!-- 곡 리스트 컨텐츠 -->
+                <div id="out_playlist_inner" class="absolute inset-0 z-30 flex flex-col justify-center py-12 pr-16 pl-[260px] overflow-visible transition-all duration-300">
+                    <div class="w-full max-w-3xl font-pretendard" id="out_playlist">
+                        <!-- JS로 동적 렌더링 됨 -->
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        // 전역 상태 데이터
+        let state = {
+            layoutReversed: false, // 레이아웃 반전 상태
+            pairImgBase64: '',
+            bgImgBase64: '',
+            vinylImgBase64: '',
+            songs: [
+                { id: 'main', isMain: true, cover: '', title: '메인 테마곡 제목', artist: '아티스트명', lyrics: '이곳에 메인 곡의 가사나\n*코멘트를 적을 수 있습니다.' },
+                { id: 'sub1', isMain: false, cover: '', title: '서브 곡 1', artist: '아티스트명' },
+                { id: 'sub2', isMain: false, cover: '', title: '서브 곡 2', artist: '아티스트명' },
+                { id: 'sub3', isMain: false, cover: '', title: '서브 곡 3', artist: '아티스트명' },
+                { id: 'sub4', isMain: false, cover: '', title: '서브 곡 4', artist: '아티스트명' }
+            ]
+        };
+
+        const EMPTY_COVER = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiM4MDgwODAiLz48L3N2Zz4=';
+
+        // 창 크기에 맞춰 미리보기 스케일링
+        function resizePreview() {
+            const container = document.getElementById('capture-area-container');
+            const target = document.getElementById('capture-target');
+            
+            const scaleX = (container.clientWidth - 40) / 1400;
+            const scaleY = (container.clientHeight - 40) / 1000;
+            const scale = Math.min(scaleX, scaleY, 1); 
+            
+            target.style.transform = `scale(${scale})`;
+        }
+        window.addEventListener('resize', resizePreview);
+
+        // 레이아웃 반전 토글
+        function toggleLayout() {
+            state.layoutReversed = !state.layoutReversed;
+            updatePreview();
+        }
+
+        // 노래 추가/삭제/이동 로직
+        function generateId() { return Math.random().toString(36).substr(2, 9); }
+        function addSong() {
+            if(state.songs.length >= 7) { alert('곡은 최대 7개까지만 추가할 수 있습니다.'); return; }
+            state.songs.push({ id: generateId(), isMain: false, cover: '', title: '새로운 곡', artist: '아티스트' });
+            renderEditor(); updatePreview();
+        }
+        function removeSong(index) {
+            if(state.songs[index].isMain) { alert('메인 곡은 삭제할 수 없습니다.'); return; }
+            state.songs.splice(index, 1);
+            renderEditor(); updatePreview();
+        }
+        function moveSong(index, dir) {
+            if (index + dir < 1 || index + dir >= state.songs.length) return; 
+            const temp = state.songs[index];
+            state.songs[index] = state.songs[index + dir];
+            state.songs[index + dir] = temp;
+            renderEditor(); updatePreview();
+        }
+
+        // 파일 업로드 처리
+        function handleFileUpload(event, targetType, songIndex = null) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                if (targetType === 'pair_img') state.pairImgBase64 = e.target.result;
+                else if (targetType === 'bg_img') state.bgImgBase64 = e.target.result;
+                else if (targetType === 'vinyl_img') state.vinylImgBase64 = e.target.result;
+                else if (targetType === 'song_cover' && songIndex !== null) state.songs[songIndex].cover = e.target.result;
+                updatePreview();
+            };
+            reader.readAsDataURL(file);
+        }
+        function removeImage(targetType, songIndex = null) {
+            if (targetType === 'pair_img') state.pairImgBase64 = '';
+            else if (targetType === 'bg_img') state.bgImgBase64 = '';
+            else if (targetType === 'vinyl_img') state.vinylImgBase64 = '';
+            else if (targetType === 'song_cover' && songIndex !== null) state.songs[songIndex].cover = '';
+            updatePreview();
+        }
+
+        // 에디터 렌더링
+        function renderEditor() {
+            const container = document.getElementById('playlist-editor');
+            let html = '';
+            
+            state.songs.forEach((song, i) => {
+                const isMain = song.isMain;
+                html += `
+                <div class="bg-white border border-zinc-200 rounded-lg p-4 relative shadow-sm">
+                    <div class="flex justify-between items-center mb-3 pb-2 border-b border-zinc-100">
+                        <span class="font-bold text-sm text-zinc-900">${isMain ? '👑 메인 곡' : '🎵 서브 곡'}</span>
+                        ${!isMain ? `
+                        <div class="flex gap-1">
+                            <button onclick="moveSong(${i}, -1)" class="bg-zinc-100 hover:bg-zinc-200 px-2 py-0.5 rounded text-[10px] transition-colors text-zinc-600">▲</button>
+                            <button onclick="moveSong(${i}, 1)" class="bg-zinc-100 hover:bg-zinc-200 px-2 py-0.5 rounded text-[10px] transition-colors text-zinc-600">▼</button>
+                            <button onclick="removeSong(${i})" class="text-red-500 font-bold ml-2 text-xs hover:underline">삭제</button>
+                        </div>
+                        ` : ''}
+                    </div>
+                    
+                    <div class="input-group mb-2">
+                        <label>앨범 커버</label>
+                        <div class="flex gap-2">
+                            <input type="file" id="f_cover_${i}" accept="image/*" class="hidden" onchange="handleFileUpload(event, 'song_cover', ${i})">
+                            <button type="button" onclick="document.getElementById('f_cover_${i}').click()" class="btn-outline w-full py-1.5 text-xs">첨부</button>
+                            <button type="button" onclick="removeImage('song_cover', ${i})" class="btn-outline text-red-500 py-1.5 text-xs">삭제</button>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-2 mb-2">
+                        <div class="input-group mb-0"><label>제목</label><input type="text" value="${song.title}" oninput="state.songs[${i}].title=this.value; updatePreview()"></div>
+                        <div class="input-group mb-0"><label>아티스트</label><input type="text" value="${song.artist}" oninput="state.songs[${i}].artist=this.value; updatePreview()"></div>
+                    </div>
+                    
+                    ${isMain ? `
+                    <div class="input-group mb-0 mt-3">
+                        <label>가사 / 코멘트 (맨 앞에 *를 붙이면 형광펜)</label>
+                        <textarea class="h-20" oninput="state.songs[${i}].lyrics=this.value; updatePreview()">${song.lyrics}</textarea>
+                    </div>
+                    ` : ''}
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        // 미리보기 렌더링 업데이트
+        function updatePreview() {
+            /* --- 0. 레이아웃 반전 처리 --- */
+            const target = document.getElementById('capture-target');
+            const leftPanel = document.getElementById('out_left_panel');
+            const vinylDivider = document.getElementById('out_vinyl_divider');
+            const playlistInner = document.getElementById('out_playlist_inner');
+
+            if (state.layoutReversed) {
+                target.classList.add('flex-row-reverse');
+                // 그림자 방향 반전
+                leftPanel.classList.remove('shadow-[10px_0_25px_rgba(0,0,0,0.25)]');
+                leftPanel.classList.add('shadow-[-10px_0_25px_rgba(0,0,0,0.25)]');
+                // 레코드판 위치 반전
+                vinylDivider.style.left = '70%';
+                // 플리 여백 반전
+                playlistInner.classList.remove('pl-[260px]', 'pr-16');
+                playlistInner.classList.add('pr-[260px]', 'pl-16');
+            } else {
+                target.classList.remove('flex-row-reverse');
+                leftPanel.classList.remove('shadow-[-10px_0_25px_rgba(0,0,0,0.25)]');
+                leftPanel.classList.add('shadow-[10px_0_25px_rgba(0,0,0,0.25)]');
+                vinylDivider.style.left = '30%';
+                playlistInner.classList.remove('pr-[260px]', 'pl-16');
+                playlistInner.classList.add('pl-[260px]', 'pr-16');
+            }
+
+            /* --- 1. 왼쪽 패널 텍스트 & 스타일 처리 --- */
+            const centerEl = document.getElementById('out_pair_center');
+            const titleEl = document.getElementById('out_pair_title');
+            const subEl = document.getElementById('out_pair_sub');
+            const catchEl = document.getElementById('out_pair_catch');
+            const containerEl = document.getElementById('out_left_text_container');
+
+            centerEl.innerText = document.getElementById('pair_center').value;
+            titleEl.innerText = document.getElementById('pair_title').value;
+            subEl.innerText = document.getElementById('pair_sub').value;
+            catchEl.innerText = document.getElementById('pair_catch').value;
+
+            const fontTitle = document.getElementById('font_title').value;
+            const fontBody = document.getElementById('font_body').value;
+            
+            // 폰트 클래스 덮어쓰기
+            centerEl.className = `text-white opacity-90 break-keep ${fontBody}`;
+            titleEl.className = `text-white break-keep whitespace-pre-line ${fontTitle}`;
+            subEl.className = `text-white opacity-90 break-keep whitespace-pre-line ${fontBody}`;
+            catchEl.className = `text-white whitespace-pre-line opacity-80 break-keep ${fontBody}`;
+
+            // 스타일 (굵기, 기울임) 적용
+            const fontStyle = document.getElementById('font_style').value;
+            const applyStyle = (el) => {
+                if(fontStyle === 'italic') el.classList.add('italic');
+                else if(fontStyle === 'bold') el.classList.add('font-bold');
+                else if(fontStyle === 'bold-italic') el.classList.add('font-bold', 'italic');
+            };
+            applyStyle(centerEl); applyStyle(titleEl); applyStyle(subEl); applyStyle(catchEl);
+
+            const textAlign = document.getElementById('text_align').value;
+            const textShadow = document.getElementById('text_shadow').value;
+            containerEl.className = `absolute bottom-16 left-0 w-full px-8 z-20 flex flex-col ${textAlign}`;
+            
+            if(textShadow === 'dark') {
+                centerEl.classList.add('text-shadow-heavy'); titleEl.classList.add('text-shadow-heavy'); subEl.classList.add('text-shadow-heavy'); catchEl.classList.add('text-shadow-heavy');
+            } else if(textShadow === 'light') {
+                centerEl.classList.add('text-shadow-light'); titleEl.classList.add('text-shadow-light'); subEl.classList.add('text-shadow-light'); catchEl.classList.add('text-shadow-light');
+            }
+
+            // 간격 미세 컨트롤
+            const sizeCenter = document.getElementById('size_center').value + 'px';
+            const posCenter = document.getElementById('pos_center').value + 'px';
+            const sizeTitle = document.getElementById('size_title').value + 'px';
+            const sizeBody = document.getElementById('size_body').value + 'px';
+            const spacingLetter = document.getElementById('spacing_letter').value + 'em';
+            const spacingLine = document.getElementById('spacing_line').value;
+            const spacingPara = document.getElementById('spacing_para').value + 'px';
+
+            centerEl.style.fontSize = sizeCenter;
+            centerEl.style.transform = `translateY(${posCenter})`;
+            titleEl.style.fontSize = sizeTitle;
+            subEl.style.fontSize = sizeBody;
+            catchEl.style.fontSize = sizeBody;
+
+            [centerEl, titleEl, subEl, catchEl].forEach(el => {
+                el.style.letterSpacing = spacingLetter;
+                el.style.lineHeight = spacingLine;
+                el.style.marginBottom = spacingPara;
+            });
+            catchEl.style.marginBottom = '0'; 
+
+            /* --- 2. 이미지 & 배경 처리 --- */
+            document.getElementById('out_pair_img').style.backgroundImage = state.pairImgBase64 ? `url('${state.pairImgBase64}')` : 'none';
+            
+            const bgColor = document.getElementById('bg_color').value;
+            document.getElementById('out_bg_color').style.backgroundColor = bgColor;
+            document.getElementById('out_bg_img').style.backgroundImage = state.bgImgBase64 ? `url('${state.bgImgBase64}')` : 'none';
+            
+            /* --- 레코드판 색상 & 이미지 적용 --- */
+            const vinylLabel = document.getElementById('out_vinyl_label');
+            vinylLabel.style.backgroundColor = document.getElementById('vinyl_color').value;
+            vinylLabel.style.backgroundImage = state.vinylImgBase64 ? `url('${state.vinylImgBase64}')` : 'none';
+            document.getElementById('out_vinyl_hole').style.backgroundColor = bgColor; 
+
+            /* --- 3. 테마 및 패턴 오버레이 --- */
+            const theme = document.getElementById('theme_mode').value;
+            const pattern = document.getElementById('bg_pattern').value;
+            const isDark = theme === 'dark'; 
+            
+            const patternEl = document.getElementById('out_bg_pattern');
+            patternEl.className = 'absolute inset-0 z-20'; 
+            if(pattern !== 'none') {
+                const suffix = isDark ? '-dark' : '';
+                patternEl.classList.add(`pattern-${pattern}${suffix}`);
+            }
+
+            // 플리 폰트 및 스타일 적용
+            const plFont = document.getElementById('pl_font_family').value;
+            const plFontStyle = document.getElementById('pl_font_style').value;
+            const plLetterSpacing = document.getElementById('pl_spacing_letter').value + 'em';
+            const plLineHeight = document.getElementById('pl_spacing_line').value;
+            
+            const playlistContainer = document.getElementById('out_playlist');
+            playlistContainer.className = `w-full max-w-3xl ${plFont}`;
+            
+            playlistContainer.classList.remove('italic', 'font-bold');
+            if(plFontStyle === 'italic') playlistContainer.classList.add('italic');
+            else if(plFontStyle === 'bold') playlistContainer.classList.add('font-bold');
+            else if(plFontStyle === 'bold-italic') playlistContainer.classList.add('font-bold', 'italic');
+
+            playlistContainer.style.letterSpacing = plLetterSpacing;
+
+            // 테마(글씨색/박스색) 클래스 제어
+            const textClass = isDark ? 'text-white' : 'text-zinc-800';
+            const subTextClass = isDark ? 'text-zinc-300' : 'text-zinc-500';
+            const boxClass = isDark ? 'glass-box-dark' : 'glass-box';
+            
+            /* --- 4. 플레이리스트 렌더링 --- */
+            // 형광펜 색상 rgba 변환
+            const hlHex = document.getElementById('hl_color').value;
+            const hlR = parseInt(hlHex.substr(1,2), 16);
+            const hlG = parseInt(hlHex.substr(3,2), 16);
+            const hlB = parseInt(hlHex.substr(5,2), 16);
+            const hlStyle = `background: linear-gradient(transparent 60%, rgba(${hlR},${hlG},${hlB},0.6) 60%); padding: 0 4px; border-radius: 2px;`;
+
+            let plHtml = '<div class="flex flex-col gap-5 w-full">'; 
+            
+            state.songs.forEach((song, i) => {
+                const coverSrc = song.cover || EMPTY_COVER;
+                const isMain = song.isMain;
+                
+                // 지그재그 배치 (반전 상태일 땐 마진 방향도 반전)
+                let alignClass = 'w-full';
+                if (!isMain) {
+                    if (state.layoutReversed) {
+                        alignClass = (i%2===0) ? 'w-[90%] ml-auto' : 'w-[90%] mr-auto';
+                    } else {
+                        alignClass = (i%2===0) ? 'w-[90%] mr-auto' : 'w-[90%] ml-auto';
+                    }
+                }
+                const shapeClass = isMain ? 'shape-main' : (i%2===0 ? 'shape-sub' : 'shape-sub-alt');
+
+                if (isMain) {
+                    // 가사 형광펜 파싱
+                    let parsedLyrics = song.lyrics.split('\n').map(line => {
+                        if (line.trim().startsWith('*')) {
+                            return `<span style="${hlStyle}">${line.replace('*', '').trim().replace(/</g, "&lt;")}</span>`;
+                        }
+                        return line.replace(/</g, "&lt;");
+                    }).join('<br>');
+
+                    // 정지된 이퀄라이저 (높이 고정)
+                    plHtml += `
+                    <div class="${alignClass} ${boxClass} ${shapeClass} p-7">
+                        <div class="flex items-center gap-7">
+                            <div class="w-28 h-28 rounded-full overflow-hidden shrink-0 shadow-[0_0_15px_rgba(0,0,0,0.2)]">
+                                <img src="${coverSrc}" class="w-full h-full object-cover">
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-3xl font-bold ${textClass} mb-2 tracking-tight">${song.title.replace(/</g, "&lt;")}</h3>
+                                <p class="text-base font-medium ${subTextClass}">${song.artist.replace(/</g, "&lt;")}</p>
+                            </div>
+                            <div class="flex items-end gap-1.5 h-8 mr-6">
+                                <div class="w-[3px] rounded-sm bg-current ${textClass} opacity-80 h-[14px]"></div>
+                                <div class="w-[3px] rounded-sm bg-current ${textClass} opacity-60 h-[24px]"></div>
+                                <div class="w-[3px] rounded-sm bg-current ${textClass} opacity-90 h-[10px]"></div>
+                                <div class="w-[3px] rounded-sm bg-current ${textClass} opacity-50 h-[28px]"></div>
+                                <div class="w-[3px] rounded-sm bg-current ${textClass} opacity-70 h-[18px]"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="pt-6 mt-6 border-t border-current opacity-80 text-base ${textClass} font-medium" style="line-height: ${plLineHeight};">
+                            ${parsedLyrics}
+                        </div>
+                    </div>`;
+                } else {
+                    plHtml += `
+                    <div class="${alignClass} ${boxClass} ${shapeClass} px-6 py-4 flex items-center gap-5">
+                        <div class="w-16 h-16 rounded-full overflow-hidden shrink-0 shadow-sm">
+                            <img src="${coverSrc}" class="w-full h-full object-cover">
+                        </div>
+                        <div class="flex-1 flex items-center gap-4 truncate">
+                            <h3 class="text-xl font-bold ${textClass} truncate">${song.title.replace(/</g, "&lt;")}</h3>
+                            <span class="${subTextClass} opacity-50">|</span>
+                            <p class="text-base ${subTextClass} truncate">${song.artist.replace(/</g, "&lt;")}</p>
+                        </div>
+                        <div class="${textClass} mr-4 opacity-80">
+                            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>
+                        </div>
+                    </div>`;
+                }
+            });
+            plHtml += '</div>';
+            playlistContainer.innerHTML = plHtml;
+        }
+
+        // 이미지 저장
+        function downloadImage() {
+            const target = document.getElementById('capture-target');
+            
+            // 캡처 전 스케일 임시 해제
+            const originalTransform = target.style.transform;
+            target.style.transform = 'scale(1)';
+
+            setTimeout(() => {
+                window.htmlToImage.toPng(target, { 
+                    pixelRatio: 2, 
+                    quality: 1.0,
+                    width: 1400,
+                    height: 1000
+                })
+                .then(dataUrl => {
+                    const link = document.createElement('a');
+                    link.download = 'pair_playlist_7x5.png';
+                    link.href = dataUrl;
+                    link.click();
+                    
+                    // 복구
+                    target.style.transform = originalTransform;
+                }).catch(err => {
+                    console.error('캡처 오류:', err);
+                    alert("캡처 중 오류가 발생했습니다.");
+                    target.style.transform = originalTransform;
+                });
+            }, 300);
+        }
+
+        // 초기화
+        window.onload = () => {
+            renderEditor();
+            updatePreview();
+            resizePreview();
+        };
+    </script>
+</body>
+</html>
