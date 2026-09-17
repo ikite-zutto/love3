@@ -189,10 +189,23 @@
                         <option value="text-right">오른쪽 정렬</option>
                     </select>
                 </div>
+                
+                <!-- 새로 추가된 폰트 색상 & 그림자 색상 선택 영역 -->
+                <div class="grid grid-cols-2 gap-2 mb-3">
+                    <div class="flex flex-col gap-1">
+                        <span class="text-[10px] text-zinc-500 font-bold">폰트 색상</span>
+                        <input type="color" id="pair_text_color" value="#ffffff" class="h-8 w-full p-1 cursor-pointer border-zinc-200 rounded" oninput="updatePreview()">
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <span class="text-[10px] text-zinc-500 font-bold">그림자 색상</span>
+                        <input type="color" id="pair_shadow_color" value="#000000" class="h-8 w-full p-1 cursor-pointer border-zinc-200 rounded" oninput="updatePreview()">
+                    </div>
+                </div>
+                
                 <div class="mb-1">
                     <select id="text_shadow" onchange="updatePreview()" class="text-xs p-1.5 border rounded w-full">
-                        <option value="dark">어두운 그림자 (밝은 이미지용)</option>
-                        <option value="light">밝은 테두리 (어두운 이미지용)</option>
+                        <option value="dark">강한 그림자</option>
+                        <option value="light">부드러운 그림자</option>
                         <option value="none">그림자 없음</option>
                     </select>
                 </div>
@@ -369,14 +382,14 @@
                 
                 <!-- 세분화된 텍스트 영역 -->
                 <div class="absolute bottom-16 left-0 w-full px-8 z-20 flex flex-col" id="out_left_text_container">
-                    <p id="out_pair_center" class="text-white text-shadow-heavy opacity-90 break-keep">센터레터를 입력하세요</p>
-                    <h1 id="out_pair_title" class="text-white text-shadow-heavy break-keep whitespace-pre-line">여기에 메인 제목을 입력하세요</h1>
-                    <p id="out_pair_sub" class="text-white text-shadow-heavy opacity-90 break-keep whitespace-pre-line">여기에 서브 소개글을 입력하세요</p>
-                    <p id="out_pair_catch" class="text-white text-shadow-heavy whitespace-pre-line opacity-80 break-keep">여기에 캐치 프레이즈를 입력하세요</p>
+                    <p id="out_pair_center" class="opacity-90 break-keep">센터레터를 입력하세요</p>
+                    <h1 id="out_pair_title" class="break-keep whitespace-pre-line">여기에 메인 제목을 입력하세요</h1>
+                    <p id="out_pair_sub" class="opacity-90 break-keep whitespace-pre-line">여기에 서브 소개글을 입력하세요</p>
+                    <p id="out_pair_catch" class="whitespace-pre-line opacity-80 break-keep">여기에 캐치 프레이즈를 입력하세요</p>
                 </div>
 
                 <!-- 커미션주 워터마크 표시 (페어 이미지 영역 하단으로 완전히 이동) -->
-                <div id="out_commissioner" class="absolute bottom-6 z-30 text-[10px] text-white/60 font-medium tracking-[0.15em] whitespace-nowrap hidden" style="display: none;"></div>
+                <div id="out_commissioner" class="absolute bottom-6 z-30 text-[10px] font-medium tracking-[0.15em] whitespace-nowrap hidden" style="display: none;"></div>
             </div>
 
             <!-- [중앙 레코드판 디바이더] -->
@@ -658,10 +671,10 @@
             const fontBody = document.getElementById('font_body').value;
             
             // 폰트 클래스 덮어쓰기
-            centerEl.className = `text-white opacity-90 break-keep ${fontBody}`;
-            titleEl.className = `text-white break-keep whitespace-pre-line ${fontTitle}`;
-            subEl.className = `text-white opacity-90 break-keep whitespace-pre-line ${fontBody}`;
-            catchEl.className = `text-white whitespace-pre-line opacity-80 break-keep ${fontBody}`;
+            centerEl.className = `opacity-90 break-keep ${fontBody}`;
+            titleEl.className = `break-keep whitespace-pre-line ${fontTitle}`;
+            subEl.className = `opacity-90 break-keep whitespace-pre-line ${fontBody}`;
+            catchEl.className = `whitespace-pre-line opacity-80 break-keep ${fontBody}`;
 
             // 스타일 (굵기, 기울임) 적용
             const fontStyle = document.getElementById('font_style').value;
@@ -674,13 +687,33 @@
 
             const textAlign = document.getElementById('text_align').value;
             const textShadow = document.getElementById('text_shadow').value;
+            const textColor = document.getElementById('pair_text_color').value;
+            const shadowColor = document.getElementById('pair_shadow_color').value;
+            
             containerEl.className = `absolute bottom-16 left-0 w-full px-8 z-20 flex flex-col ${textAlign}`;
             
-            if(textShadow === 'dark') {
-                centerEl.classList.add('text-shadow-heavy'); titleEl.classList.add('text-shadow-heavy'); subEl.classList.add('text-shadow-heavy'); catchEl.classList.add('text-shadow-heavy');
-            } else if(textShadow === 'light') {
-                centerEl.classList.add('text-shadow-light'); titleEl.classList.add('text-shadow-light'); subEl.classList.add('text-shadow-light'); catchEl.classList.add('text-shadow-light');
-            }
+            // HEX 색상을 RGBA로 변환 (그림자 투명도 적용을 위해)
+            const hexToRgb = (hex) => {
+                const r = parseInt(hex.slice(1, 3), 16);
+                const g = parseInt(hex.slice(3, 5), 16);
+                const b = parseInt(hex.slice(5, 7), 16);
+                return `${r}, ${g}, ${b}`;
+            };
+            const shadowRgb = hexToRgb(shadowColor);
+
+            [centerEl, titleEl, subEl, catchEl].forEach(el => {
+                // 폰트 색상 적용
+                el.style.color = textColor;
+                
+                // 그림자 색상 및 스타일 적용
+                if(textShadow === 'dark') {
+                    el.style.textShadow = `0 4px 20px rgba(${shadowRgb}, 0.9), 0 2px 8px rgba(${shadowRgb}, 0.8)`;
+                } else if(textShadow === 'light') {
+                    el.style.textShadow = `0 2px 10px rgba(${shadowRgb}, 0.8)`;
+                } else {
+                    el.style.textShadow = 'none';
+                }
+            });
 
             // 간격 미세 컨트롤
             const sizeCenter = document.getElementById('size_center').value + 'px';
@@ -777,8 +810,10 @@
                 commAlignClass = 'right-8';
             }
 
-            // 플리 폰트와 상관없이 페어 이미지 쪽이므로 흰색 반투명 텍스트 적용 (그라데이션 덕분에 잘 보임)
-            commissionerEl.className = `absolute bottom-6 z-30 text-[10px] text-white/60 font-medium tracking-[0.15em] whitespace-nowrap transition-all duration-300 ${fontBody} ${commAlignClass} ${commTransform}`;
+            // 플리 폰트와 상관없이 페어 이미지 쪽이므로 사용자가 선택한 폰트 색상을 반투명하게 적용
+            commissionerEl.className = `absolute bottom-6 z-30 text-[10px] font-medium tracking-[0.15em] whitespace-nowrap transition-all duration-300 ${fontBody} ${commAlignClass} ${commTransform}`;
+            commissionerEl.style.color = textColor;
+            commissionerEl.style.opacity = '0.6';
             
             /* --- 5. 플레이리스트 렌더링 --- */
             // 형광펜 색상 rgba 변환
