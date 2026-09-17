@@ -399,7 +399,8 @@
                 <div id="out_bg_pattern" class="absolute inset-0 z-20"></div>
 
                 <!-- 커미션주 워터마크 표시 (우측 상단) -->
-                <div id="out_commissioner" class="absolute top-10 z-50 text-[11px] font-medium tracking-[0.15em] opacity-50 transition-all duration-300 hidden" style="display: none;"></div>
+                <!-- 클래스에서 top-10을 top-6으로 수정하고 whitespace-nowrap을 추가하여 메인 곡과 겹치지 않게 조절 -->
+                <div id="out_commissioner" class="absolute top-6 z-50 text-[11px] font-medium tracking-[0.15em] opacity-50 transition-all duration-300 whitespace-nowrap hidden" style="display: none;"></div>
 
                 <!-- 곡 리스트 컨텐츠 -->
                 <div id="out_playlist_inner" class="absolute inset-0 z-30 flex flex-col justify-center py-12 pr-16 pl-[260px] overflow-visible transition-all duration-300">
@@ -719,8 +720,9 @@
             }
 
             // 레이아웃이 반전되면 우측이 아닌 좌측 상단으로 이동시켜 텍스트가 잘리지 않게 조정
-            const commPosClass = state.layoutReversed ? 'left-12' : 'right-12';
-            commissionerEl.className = `absolute top-10 z-50 text-[11px] font-medium tracking-[0.15em] opacity-50 transition-all duration-300 ${plFont} ${textClass} ${commPosClass}`;
+            // top-10을 top-6으로 수정하여 메인 테마곡 박스와 겹치지 않도록 위로 바짝 올림
+            const commPosClass = state.layoutReversed ? 'left-10' : 'right-10';
+            commissionerEl.className = `absolute top-6 z-50 text-[11px] font-medium tracking-[0.15em] opacity-50 transition-all duration-300 whitespace-nowrap ${plFont} ${textClass} ${commPosClass}`;
             
             /* --- 5. 플레이리스트 렌더링 --- */
             // 형광펜 색상 rgba 변환
