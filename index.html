@@ -2,21 +2,22 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- iOS에서 입력창 터치 시 자동 확대되는 현상 방지 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>페어 플레이리스트 메이커</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js"></script>
     
-    <!-- 다양한 폰트 로드 -->
+    <!-- 폰트 로드 (기존 + 신규 폰트 대거 추가) -->
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Great+Vibes&family=Noto+Serif+KR:wght@400;700;900&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Great+Vibes&family=Noto+Serif+KR:wght@400;700;900&family=Gowun+Batang:wght@400;700&family=Nanum+Myeongjo:wght@400;700;800&family=Hahmlet:wght@400..900&family=Jua&family=Dongle:wght@300;400;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Cinzel:wght@400..900&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2212@1.0/KCC-eunyoung.woff2" rel="stylesheet">
 
     <style>
         body { font-family: 'Pretendard', sans-serif; overflow: hidden; background-color: #f8fafc; }
         
-        /* 커스텀 스크롤바 (세련되게) */
+        /* 커스텀 스크롤바 */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
@@ -34,8 +35,35 @@
         .input-group { margin-bottom: 1.2rem; }
         .input-group:last-child { margin-bottom: 0; }
         .input-group label { display: block; font-size: 0.75rem; font-weight: 600; color: #475569; margin-bottom: 0.5rem; }
-        .input-group input[type="text"], .input-group textarea, .input-group select { width: 100%; padding: 0.6rem 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; background: #f8fafc; outline: none; transition: all 0.2s; color: #1e293b; }
-        .input-group input[type="text"]:focus, .input-group textarea:focus, .input-group select:focus { border-color: #0f172a; background: #ffffff; box-shadow: 0 0 0 1px #0f172a; }
+        
+        /* 🔥 입력창 & 드롭다운 공통 디자인 (거대해지는 문제 해결) 🔥 */
+        .form-control {
+            width: 100%;
+            padding: 0.6rem 0.75rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 0.8rem; /* 글씨 크기를 작고 세련되게 고정 */
+            background-color: #f8fafc;
+            color: #1e293b;
+            outline: none;
+            transition: all 0.2s;
+            -webkit-appearance: none; /* iOS 기본 디자인 완벽 제거 */
+            appearance: none;
+        }
+        .form-control:focus {
+            border-color: #0f172a;
+            background-color: #ffffff;
+            box-shadow: 0 0 0 1px #0f172a;
+        }
+        /* Select(드롭다운) 전용 화살표 아이콘 추가 */
+        select.form-control {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 1rem;
+            padding-right: 2.5rem;
+            cursor: pointer;
+        }
         
         /* 커스텀 슬라이더 (Range) */
         input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
@@ -59,14 +87,20 @@
         #capture-area-container { display: flex; align-items: center; justify-content: center; }
         .preview-wrapper { width: 1400px; height: 1000px; position: relative; transform-origin: center; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); overflow: hidden; display: flex; flex-shrink: 0; transition: flex-direction 0.3s ease; }
 
-        /* 폰트 클래스 */
+        /* 폰트 클래스 (신규 폰트 추가됨) */
         .font-pretendard { font-family: 'Pretendard', sans-serif; }
         .font-notoserif { font-family: 'Noto Serif KR', serif; }
         .font-gowun { font-family: 'Gowun Batang', serif; }
         .font-gmarket { font-family: 'GmarketSansMedium', sans-serif; }
+        .font-nanum { font-family: 'Nanum Myeongjo', serif; }
+        .font-hahmlet { font-family: 'Hahmlet', serif; }
+        .font-jua { font-family: 'Jua', sans-serif; }
+        .font-dongle { font-family: 'Dongle', sans-serif; }
         .font-caveat { font-family: 'Caveat', cursive; }
         .font-greatvibes { font-family: 'Great Vibes', cursive; }
         .font-eunyoung { font-family: 'KCC-eunyoung', cursive; }
+        .font-playfair { font-family: 'Playfair Display', serif; }
+        .font-cinzel { font-family: 'Cinzel', serif; }
         
         /* 텍스트 그림자 */
         .text-shadow-heavy { text-shadow: 0 4px 20px rgba(0,0,0,0.9), 0 2px 8px rgba(0,0,0,0.8); }
@@ -113,7 +147,6 @@
 
         <div class="flex-1 overflow-y-auto p-4 lg:p-6 pb-24 custom-scroll" id="editor-form">
             
-            <!-- 레이아웃 반전 버튼 -->
             <button onclick="toggleLayout()" class="w-full mb-6 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-bold py-3 rounded-xl text-xs transition-all shadow-sm flex items-center justify-center gap-2 tracking-wider">
                 <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
                 좌우 레이아웃 반전 (SWAP)
@@ -159,19 +192,19 @@
                 <span class="sub-group-title">텍스트 내용 입력</span>
                 <div class="input-group">
                     <label>센터레터 (제목 위 작은 글씨)</label>
-                    <input type="text" id="pair_center" value="센터레터를 입력하세요" oninput="updatePreview()">
+                    <input type="text" id="pair_center" class="form-control" value="센터레터를 입력하세요" oninput="updatePreview()">
                 </div>
                 <div class="input-group">
                     <label>메인 제목 (줄바꿈 가능)</label>
-                    <textarea id="pair_title" class="h-16 resize-none" oninput="updatePreview()">여기에 메인 제목을 입력하세요</textarea>
+                    <textarea id="pair_title" class="form-control h-16 resize-none" oninput="updatePreview()">여기에 메인 제목을 입력하세요</textarea>
                 </div>
                 <div class="input-group">
                     <label>서브 소개글</label>
-                    <textarea id="pair_sub" class="h-16 resize-none" oninput="updatePreview()">여기에 서브 소개글을 입력하세요</textarea>
+                    <textarea id="pair_sub" class="form-control h-16 resize-none" oninput="updatePreview()">여기에 서브 소개글을 입력하세요</textarea>
                 </div>
                 <div class="input-group">
                     <label>캐치 프레이즈</label>
-                    <textarea id="pair_catch" class="h-16 resize-none" oninput="updatePreview()">여기에 캐치 프레이즈를 입력하세요</textarea>
+                    <textarea id="pair_catch" class="form-control h-16 resize-none" oninput="updatePreview()">여기에 캐치 프레이즈를 입력하세요</textarea>
                 </div>
             </div>
 
@@ -180,34 +213,45 @@
                 <div class="grid grid-cols-2 gap-3 mb-3">
                     <div class="flex flex-col gap-1.5">
                         <span class="text-[10px] text-slate-500 font-bold uppercase">제목 폰트</span>
-                        <select id="font_title" onchange="updatePreview()">
+                        <select id="font_title" class="form-control" onchange="updatePreview()">
                             <option value="font-pretendard" selected>프리텐다드</option>
+                            <option value="font-gmarket">지마켓산스</option>
                             <option value="font-notoserif">본명조</option>
                             <option value="font-gowun">고운바탕</option>
-                            <option value="font-gmarket">지마켓산스</option>
+                            <option value="font-nanum">나눔명조</option>
+                            <option value="font-hahmlet">함초롬바탕</option>
+                            <option value="font-jua">배민 주아체</option>
+                            <option value="font-dongle">동글체</option>
                             <option value="font-eunyoung">KCC은영체</option>
                             <option value="font-greatvibes">Great Vibes</option>
                             <option value="font-caveat">Caveat</option>
+                            <option value="font-playfair">Playfair Display</option>
+                            <option value="font-cinzel">Cinzel</option>
                         </select>
                     </div>
                     <div class="flex flex-col gap-1.5">
                         <span class="text-[10px] text-slate-500 font-bold uppercase">본문 폰트</span>
-                        <select id="font_body" onchange="updatePreview()">
+                        <select id="font_body" class="form-control" onchange="updatePreview()">
                             <option value="font-pretendard" selected>프리텐다드</option>
+                            <option value="font-gmarket">지마켓산스</option>
                             <option value="font-notoserif">본명조</option>
                             <option value="font-gowun">고운바탕</option>
-                            <option value="font-gmarket">지마켓산스</option>
+                            <option value="font-nanum">나눔명조</option>
+                            <option value="font-hahmlet">함초롬바탕</option>
+                            <option value="font-jua">배민 주아체</option>
+                            <option value="font-dongle">동글체</option>
+                            <option value="font-playfair">Playfair Display</option>
                         </select>
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-3 mb-4">
-                    <select id="font_style" onchange="updatePreview()">
+                    <select id="font_style" class="form-control" onchange="updatePreview()">
                         <option value="normal">기본 두께</option>
                         <option value="italic">기울임 (Italic)</option>
                         <option value="bold" selected>굵게 (Bold)</option>
                         <option value="bold-italic">굵고 기울임</option>
                     </select>
-                    <select id="text_align" onchange="updatePreview()">
+                    <select id="text_align" class="form-control" onchange="updatePreview()">
                         <option value="text-center">가운데 정렬</option>
                         <option value="text-left">왼쪽 정렬</option>
                         <option value="text-right">오른쪽 정렬</option>
@@ -230,7 +274,7 @@
                 </div>
                 
                 <div class="mb-1">
-                    <select id="text_shadow" onchange="updatePreview()">
+                    <select id="text_shadow" class="form-control" onchange="updatePreview()">
                         <option value="dark">어두운 그림자 (밝은 이미지용)</option>
                         <option value="light">밝은 테두리 (어두운 이미지용)</option>
                         <option value="none">그림자 없음</option>
@@ -296,7 +340,7 @@
                     </div>
                     <div class="input-group mb-0">
                         <label>글씨 & 박스 톤</label>
-                        <select id="theme_mode" onchange="updatePreview()">
+                        <select id="theme_mode" class="form-control" onchange="updatePreview()">
                             <option value="light">화이트 유리 (어두운 글씨)</option>
                             <option value="dark">블랙 유리 (밝은 글씨)</option>
                         </select>
@@ -304,7 +348,7 @@
                 </div>
                 <div class="input-group mb-0">
                     <label>배경 패턴 오버레이</label>
-                    <select id="bg_pattern" onchange="updatePreview()">
+                    <select id="bg_pattern" class="form-control" onchange="updatePreview()">
                         <option value="none">패턴 없음</option>
                         <option value="dot-dense">촘촘한 도트</option>
                         <option value="dot-loose">성긴 도트</option>
@@ -335,13 +379,18 @@
             <div class="sub-group">
                 <span class="sub-group-title">플리 텍스트 스타일</span>
                 <div class="grid grid-cols-2 gap-3 mb-4">
-                    <select id="pl_font_family" onchange="updatePreview()">
+                    <select id="pl_font_family" class="form-control" onchange="updatePreview()">
                         <option value="font-pretendard" selected>프리텐다드</option>
+                        <option value="font-gmarket">지마켓산스</option>
                         <option value="font-notoserif">본명조</option>
                         <option value="font-gowun">고운바탕</option>
-                        <option value="font-gmarket">지마켓산스</option>
+                        <option value="font-nanum">나눔명조</option>
+                        <option value="font-hahmlet">함초롬바탕</option>
+                        <option value="font-jua">배민 주아체</option>
+                        <option value="font-dongle">동글체</option>
+                        <option value="font-playfair">Playfair Display</option>
                     </select>
-                    <select id="pl_font_style" onchange="updatePreview()">
+                    <select id="pl_font_style" class="form-control" onchange="updatePreview()">
                         <option value="normal">기본 두께</option>
                         <option value="italic">기울임 (Italic)</option>
                         <option value="bold">굵게 (Bold)</option>
@@ -364,7 +413,7 @@
                 <span class="sub-group-title">워터마크 (커미션 정보)</span>
                 <div class="input-group mb-0">
                     <label>커미션주 이름 (쉼표(,)로 구분하여 여러 명 입력 가능)</label>
-                    <input type="text" id="commissioner_name" placeholder="예: 닉네임1, 닉네임2" oninput="updatePreview()">
+                    <input type="text" id="commissioner_name" class="form-control" placeholder="예: 닉네임1, 닉네임2" oninput="updatePreview()">
                 </div>
             </div>
 
@@ -373,7 +422,7 @@
             =========================================== -->
             <div class="section-title mt-10">3. 플레이리스트 내용</div>
             
-            <!-- 형광펜 안내 박스 (모던 스타일) -->
+            <!-- 형광펜 안내 박스 -->
             <div class="bg-indigo-50 border border-indigo-100 p-4 rounded-xl mb-5 flex gap-3 items-start">
                 <svg class="w-5 h-5 text-indigo-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 <div class="flex-1">
@@ -400,16 +449,13 @@
     <!-- 오른쪽(모바일은 상단): 미리보기 패널 -->
     <main id="preview-main" class="w-full h-[45dvh] lg:flex-1 lg:h-full bg-slate-200 p-2 lg:p-8 relative overflow-hidden flex items-center justify-center shrink-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:16px_16px]">
         
-        <!-- 모바일 전용 토글 버튼 (화면 크게보기) -->
         <button id="mobile-preview-toggle" onclick="toggleMobilePreview()" class="lg:hidden absolute bottom-3 right-3 bg-slate-900/80 hover:bg-slate-900 text-white px-4 py-2 rounded-full text-[12px] font-bold z-50 backdrop-blur-md shadow-xl border border-white/10 transition-all flex items-center gap-1.5">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path></svg>
             크게 보기
         </button>
 
-        <!-- 캡처될 실제 영역 (1400 x 1000 - 7:5 비율) -->
         <div id="capture-target" class="preview-wrapper bg-white">
             
-            <!-- [왼쪽 영역] 페어 이미지 (30% 너비) -->
             <div id="out_left_panel" class="relative w-[30%] h-full shrink-0 overflow-hidden bg-zinc-200 z-40 shadow-[10px_0_25px_rgba(0,0,0,0.25)] transition-shadow duration-300">
                 <div id="out_pair_img" class="absolute inset-0 bg-cover bg-no-repeat"></div>
                 <div id="out_pair_gradient" class="absolute bottom-0 left-0 w-full h-[60%] pointer-events-none z-10" style="background: linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0.47), transparent);"></div>
@@ -424,7 +470,6 @@
                 <div id="out_commissioner" class="absolute bottom-6 z-30 text-[10px] font-medium tracking-[0.15em] whitespace-nowrap hidden" style="display: none;"></div>
             </div>
 
-            <!-- [중앙 레코드판 디바이더] -->
             <div id="out_vinyl_divider" class="absolute top-1/2 left-[30%] z-30 -translate-x-1/2 -translate-y-1/2 w-[450px] h-[450px] transition-all duration-300">
                 <div class="w-full h-full rounded-full bg-[#111] shadow-[15px_0_30px_rgba(0,0,0,0.5)] flex items-center justify-center" style="background-image: repeating-radial-gradient(#111, #111 4px, #222 5px, #111 6px);">
                     <div class="w-[140px] h-[140px] rounded-full border-2 border-[#111] flex items-center justify-center bg-cover bg-center" id="out_vinyl_label" style="background-color: #ff5555;">
@@ -433,7 +478,6 @@
                 </div>
             </div>
 
-            <!-- [오른쪽 영역] 플레이리스트 (70% 너비) -->
             <div id="out_right_panel" class="relative w-[70%] h-full shrink-0 overflow-hidden">
                 <div id="out_bg_color" class="absolute inset-0 z-0 bg-[#e4e4e7]"></div>
                 <div id="out_bg_img" class="absolute inset-[-5%] z-10 bg-cover bg-center" style="filter: blur(8px); opacity: 0.6;"></div>
@@ -483,7 +527,6 @@
     </div>
 
     <script>
-        // 전역 상태 데이터
         let state = {
             layoutReversed: false,
             pairImgBase64: '',
@@ -498,7 +541,7 @@
             ]
         };
 
-        const EMPTY_COVER = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiNlMmU4ZjAiLz48L3N2Zz4='; // 회색 톤 조정
+        const EMPTY_COVER = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiNlMmU4ZjAiLz48L3N2Zz4='; 
 
         function openNotice() {
             const modal = document.getElementById('notice-modal');
@@ -630,14 +673,14 @@
                     </div>
                     
                     <div class="grid grid-cols-2 gap-3 mb-2">
-                        <div class="input-group mb-0"><label>제목</label><input type="text" value="${song.title}" oninput="state.songs[${i}].title=this.value; updatePreview()"></div>
-                        <div class="input-group mb-0"><label>아티스트</label><input type="text" value="${song.artist}" oninput="state.songs[${i}].artist=this.value; updatePreview()"></div>
+                        <div class="input-group mb-0"><label>제목</label><input type="text" class="form-control" value="${song.title}" oninput="state.songs[${i}].title=this.value; updatePreview()"></div>
+                        <div class="input-group mb-0"><label>아티스트</label><input type="text" class="form-control" value="${song.artist}" oninput="state.songs[${i}].artist=this.value; updatePreview()"></div>
                     </div>
                     
                     ${isMain ? `
                     <div class="input-group mb-0 mt-4 border-t border-slate-100 pt-4">
                         <label>가사 / 코멘트 (맨 앞에 *를 붙이면 형광펜)</label>
-                        <textarea class="h-24 resize-none" oninput="state.songs[${i}].lyrics=this.value; updatePreview()">${song.lyrics}</textarea>
+                        <textarea class="form-control h-24 resize-none" oninput="state.songs[${i}].lyrics=this.value; updatePreview()">${song.lyrics}</textarea>
                     </div>
                     ` : ''}
                 </div>`;
