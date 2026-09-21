@@ -14,38 +14,50 @@
     <link href="https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2212@1.0/KCC-eunyoung.woff2" rel="stylesheet">
 
     <style>
-        body { font-family: 'Pretendard', sans-serif; overflow: hidden; background-color: #f4f4f5; }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #f4f4f5; }
-        ::-webkit-scrollbar-thumb { background: #d4d4d8; border-radius: 4px; }
+        body { font-family: 'Pretendard', sans-serif; overflow: hidden; background-color: #f8fafc; }
         
-        /* 빌더 UI 스타일 */
-        .section-title { font-weight: 800; font-size: 1.1rem; color: #18181b; margin: 2.5rem 0 1rem 0; padding-bottom: 0.5rem; border-bottom: 2px solid #18181b; display: flex; justify-content: space-between; align-items: center; letter-spacing: -0.02em; }
-        .sub-group { background: #fafafa; border: 1px solid #e4e4e7; border-radius: 0.5rem; padding: 1rem; margin-bottom: 1rem; }
-        .sub-group-title { font-size: 0.75rem; font-weight: 800; color: #3f3f46; margin-bottom: 0.8rem; display: block; border-bottom: 1px dashed #d4d4d8; padding-bottom: 0.4rem; }
+        /* 커스텀 스크롤바 (세련되게) */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         
-        .input-group { margin-bottom: 1rem; }
+        /* 빌더 UI 스타일 (모던 카드형) */
+        .section-title { font-weight: 800; font-size: 1.1rem; color: #0f172a; margin: 2.5rem 0 1rem 0; padding-bottom: 0.5rem; display: flex; align-items: center; gap: 8px; letter-spacing: -0.02em; }
+        .section-title::before { content: ''; display: block; width: 4px; height: 18px; background: #0f172a; border-radius: 2px; }
+        
+        .sub-group { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.02); transition: all 0.2s; }
+        .sub-group:hover { border-color: #cbd5e1; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.04); }
+        .sub-group-title { font-size: 0.75rem; font-weight: 700; color: #64748b; margin-bottom: 1rem; display: flex; align-items: center; text-transform: uppercase; letter-spacing: 0.05em; }
+        .sub-group-title::after { content: ''; flex-grow: 1; height: 1px; background: #f1f5f9; margin-left: 10px; }
+        
+        .input-group { margin-bottom: 1.2rem; }
         .input-group:last-child { margin-bottom: 0; }
-        .input-group label { display: block; font-size: 0.75rem; font-weight: 700; color: #52525b; margin-bottom: 0.4rem; }
-        .input-group input[type="text"], .input-group textarea, .input-group select, .input-group input[type="color"], .input-group input[type="range"] { width: 100%; padding: 0.6rem; border: 1px solid #d4d4d8; border-radius: 0.4rem; font-size: 0.85rem; background: #fff; outline: none; transition: 0.2s; }
-        .input-group input[type="text"]:focus, .input-group textarea:focus { border-color: #18181b; box-shadow: 0 0 0 1px #18181b; }
+        .input-group label { display: block; font-size: 0.75rem; font-weight: 600; color: #475569; margin-bottom: 0.5rem; }
+        .input-group input[type="text"], .input-group textarea, .input-group select { width: 100%; padding: 0.6rem 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; background: #f8fafc; outline: none; transition: all 0.2s; color: #1e293b; }
+        .input-group input[type="text"]:focus, .input-group textarea:focus, .input-group select:focus { border-color: #0f172a; background: #ffffff; box-shadow: 0 0 0 1px #0f172a; }
         
-        .btn-outline { background: #fff; border: 1px solid #d4d4d8; color: #3f3f46; padding: 0.4rem 0.6rem; border-radius: 0.3rem; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
-        .btn-outline:hover { background: #f4f4f5; border-color: #a1a1aa; color: #18181b; }
+        /* 커스텀 슬라이더 (Range) */
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 14px; width: 14px; border-radius: 50%; background: #0f172a; cursor: pointer; margin-top: -5px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: transform 0.1s; }
+        input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cursor: pointer; background: #e2e8f0; border-radius: 2px; }
+        input[type=range]:focus { outline: none; }
+
+        /* 커스텀 컬러 피커 */
+        input[type="color"] { -webkit-appearance: none; border: none; border-radius: 8px; overflow: hidden; padding: 0; cursor: pointer; height: 36px; width: 100%; }
+        input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+        input[type="color"]::-webkit-color-swatch { border: 1px solid #cbd5e1; border-radius: 8px; }
+
+        /* 버튼 스타일 */
+        .btn-outline { background: #ffffff; border: 1px solid #cbd5e1; color: #475569; padding: 0.5rem 0.75rem; border-radius: 8px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+        .btn-outline:hover { background: #f8fafc; border-color: #94a3b8; color: #0f172a; }
+        .btn-danger { color: #ef4444; border-color: #fecaca; background: #fef2f2; }
+        .btn-danger:hover { background: #fee2e2; border-color: #fca5a5; color: #dc2626; }
 
         /* 미리보기 캔버스 (정확한 7:5 비율 = 1400x1000) */
         #capture-area-container { display: flex; align-items: center; justify-content: center; }
-        .preview-wrapper {
-            width: 1400px;
-            height: 1000px;
-            position: relative;
-            transform-origin: center;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            overflow: hidden;
-            display: flex;
-            flex-shrink: 0;
-            transition: flex-direction 0.3s ease;
-        }
+        .preview-wrapper { width: 1400px; height: 1000px; position: relative; transform-origin: center; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); overflow: hidden; display: flex; flex-shrink: 0; transition: flex-direction 0.3s ease; }
 
         /* 폰트 클래스 */
         .font-pretendard { font-family: 'Pretendard', sans-serif; }
@@ -72,52 +84,45 @@
         .pattern-diagonal-dark { background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,0.05) 10px, rgba(0,0,0,0.05) 11px); }
 
         /* 화이트 톤 글래스모피즘 박스 */
-        .glass-box {
-            background: rgba(255, 255, 255, 0.45);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.7);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
-        }
-        .glass-box-dark {
-            background: rgba(0, 0, 0, 0.35);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-        }
+        .glass-box { background: rgba(255, 255, 255, 0.45); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.7); box-shadow: 0 8px 32px rgba(0,0,0,0.08); }
+        .glass-box-dark { background: rgba(0, 0, 0, 0.35); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.15); box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
 
         /* 비대칭 둥근 모서리 */
         .shape-main { border-radius: 50px 50px 50px 16px; }
         .shape-sub { border-radius: 40px 16px 40px 40px; }
         .shape-sub-alt { border-radius: 16px 40px 40px 40px; } 
 
-        /* 모바일 전환 애니메이션 부드럽게 */
         aside, main { transition: height 0.3s ease, flex 0.3s ease; }
     </style>
 </head>
-<!-- 모바일에서는 세로 배치(에디터 아래, 뷰어 위), 데스크탑(lg)에서는 가로 배치 유지 -->
 <body class="flex flex-col-reverse lg:flex-row h-[100dvh] w-screen">
 
     <!-- 왼쪽(모바일은 하단): 에디터 패널 -->
-    <aside id="editor-aside" class="w-full h-[55dvh] lg:w-[420px] lg:h-full bg-white border-t lg:border-t-0 lg:border-r border-zinc-200 flex flex-col shadow-xl z-50 shrink-0">
-        <div class="p-4 lg:p-5 bg-zinc-900 text-white flex justify-between items-center shrink-0">
-            <h1 class="text-base lg:text-lg font-black tracking-wide">페어 플레이리스트 메이커</h1>
-            <button onclick="downloadImage()" class="bg-zinc-700 hover:bg-zinc-600 text-white text-xs font-bold py-2 px-3 lg:px-4 rounded-md transition-colors shadow-sm">이미지 저장</button>
+    <aside id="editor-aside" class="w-full h-[55dvh] lg:w-[420px] lg:h-full bg-slate-50 border-t lg:border-t-0 lg:border-r border-slate-200 flex flex-col shadow-2xl z-50 shrink-0 relative">
+        <!-- 헤더 영역 -->
+        <div class="p-4 lg:p-5 bg-slate-900 text-white flex justify-between items-center shrink-0 shadow-md z-10">
+            <h1 class="text-base lg:text-lg font-black tracking-wide flex items-center gap-2">
+                <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path></svg>
+                페어 플리 메이커
+            </h1>
+            <button onclick="downloadImage()" class="bg-indigo-500 hover:bg-indigo-600 text-white text-xs font-bold py-2 px-4 rounded-lg transition-colors shadow-sm flex items-center gap-1.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                저장
+            </button>
         </div>
 
-        <div class="flex-1 overflow-y-auto p-4 lg:p-6 pb-20 custom-scroll" id="editor-form">
+        <div class="flex-1 overflow-y-auto p-4 lg:p-6 pb-24 custom-scroll" id="editor-form">
             
             <!-- 레이아웃 반전 버튼 -->
-            <button onclick="toggleLayout()" class="w-full mb-4 bg-zinc-100 hover:bg-zinc-200 border border-zinc-200 text-zinc-600 font-bold py-2.5 rounded-md text-xs transition-colors flex items-center justify-center gap-2 tracking-wider">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
-                LAYOUT SWAP
+            <button onclick="toggleLayout()" class="w-full mb-6 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-bold py-3 rounded-xl text-xs transition-all shadow-sm flex items-center justify-center gap-2 tracking-wider">
+                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                좌우 레이아웃 반전 (SWAP)
             </button>
 
             <!-- ==========================================
                  1. 페어 이미지 영역
             =========================================== -->
-            <div class="section-title mt-2 lg:mt-6">1. 페어 이미지 영역</div>
+            <div class="section-title mt-2 lg:mt-4">1. 페어 이미지 영역</div>
             
             <div class="sub-group">
                 <span class="sub-group-title">이미지 설정</span>
@@ -125,23 +130,27 @@
                     <label>페어 바탕 이미지 첨부</label>
                     <div class="flex gap-2">
                         <input type="file" id="f_pair_img" accept="image/*" class="hidden" onchange="handleFileUpload(event, 'pair_img')">
-                        <button type="button" onclick="document.getElementById('f_pair_img').click()" class="btn-outline w-full py-2">이미지 첨부하기</button>
-                        <button type="button" onclick="removeImage('pair_img')" class="btn-outline text-red-500">삭제</button>
+                        <button type="button" onclick="document.getElementById('f_pair_img').click()" class="btn-outline flex-1">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                            이미지 첨부
+                        </button>
+                        <button type="button" onclick="removeImage('pair_img')" class="btn-outline btn-danger px-3">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
                     </div>
                 </div>
-                <!-- 이미지 위치 및 크기 조정 기능 추가 -->
-                <div class="space-y-3 mt-3 border-t border-zinc-200 pt-3">
-                    <div class="flex justify-between items-center">
-                        <span class="text-[10px] font-bold text-zinc-600">이미지 크기 (0=꽉차게)</span>
-                        <input type="range" id="pair_img_scale" min="0" max="500" value="0" class="w-2/3" oninput="updatePreview()">
+                <div class="space-y-4 mt-4 border-t border-slate-100 pt-4">
+                    <div class="flex justify-between items-center gap-4">
+                        <span class="text-[11px] font-bold text-slate-500 whitespace-nowrap">크기 (0=꽉차게)</span>
+                        <input type="range" id="pair_img_scale" min="0" max="500" value="0" oninput="updatePreview()">
                     </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-[10px] font-bold text-zinc-600">이미지 좌우 위치</span>
-                        <input type="range" id="pair_img_pos_x" min="0" max="100" value="50" class="w-2/3" oninput="updatePreview()">
+                    <div class="flex justify-between items-center gap-4">
+                        <span class="text-[11px] font-bold text-slate-500 whitespace-nowrap">좌우 위치</span>
+                        <input type="range" id="pair_img_pos_x" min="0" max="100" value="50" oninput="updatePreview()">
                     </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-[10px] font-bold text-zinc-600">이미지 상하 위치</span>
-                        <input type="range" id="pair_img_pos_y" min="0" max="100" value="50" class="w-2/3" oninput="updatePreview()">
+                    <div class="flex justify-between items-center gap-4">
+                        <span class="text-[11px] font-bold text-slate-500 whitespace-nowrap">상하 위치</span>
+                        <input type="range" id="pair_img_pos_y" min="0" max="100" value="50" oninput="updatePreview()">
                     </div>
                 </div>
             </div>
@@ -154,24 +163,24 @@
                 </div>
                 <div class="input-group">
                     <label>메인 제목 (줄바꿈 가능)</label>
-                    <textarea id="pair_title" class="h-16" oninput="updatePreview()">여기에 메인 제목을 입력하세요</textarea>
+                    <textarea id="pair_title" class="h-16 resize-none" oninput="updatePreview()">여기에 메인 제목을 입력하세요</textarea>
                 </div>
                 <div class="input-group">
                     <label>서브 소개글</label>
-                    <textarea id="pair_sub" class="h-16" oninput="updatePreview()">여기에 서브 소개글을 입력하세요</textarea>
+                    <textarea id="pair_sub" class="h-16 resize-none" oninput="updatePreview()">여기에 서브 소개글을 입력하세요</textarea>
                 </div>
                 <div class="input-group">
                     <label>캐치 프레이즈</label>
-                    <textarea id="pair_catch" class="h-16" oninput="updatePreview()">여기에 캐치 프레이즈를 입력하세요</textarea>
+                    <textarea id="pair_catch" class="h-16 resize-none" oninput="updatePreview()">여기에 캐치 프레이즈를 입력하세요</textarea>
                 </div>
             </div>
 
             <div class="sub-group">
                 <span class="sub-group-title">텍스트 스타일 설정</span>
-                <div class="grid grid-cols-2 gap-2 mb-3">
-                    <div class="flex flex-col gap-1">
-                        <span class="text-[10px] text-zinc-500 font-bold">제목 폰트</span>
-                        <select id="font_title" onchange="updatePreview()" class="text-xs p-1.5 border rounded">
+                <div class="grid grid-cols-2 gap-3 mb-3">
+                    <div class="flex flex-col gap-1.5">
+                        <span class="text-[10px] text-slate-500 font-bold uppercase">제목 폰트</span>
+                        <select id="font_title" onchange="updatePreview()">
                             <option value="font-pretendard" selected>프리텐다드</option>
                             <option value="font-notoserif">본명조</option>
                             <option value="font-gowun">고운바탕</option>
@@ -181,9 +190,9 @@
                             <option value="font-caveat">Caveat</option>
                         </select>
                     </div>
-                    <div class="flex flex-col gap-1">
-                        <span class="text-[10px] text-zinc-500 font-bold">본문 폰트</span>
-                        <select id="font_body" onchange="updatePreview()" class="text-xs p-1.5 border rounded">
+                    <div class="flex flex-col gap-1.5">
+                        <span class="text-[10px] text-slate-500 font-bold uppercase">본문 폰트</span>
+                        <select id="font_body" onchange="updatePreview()">
                             <option value="font-pretendard" selected>프리텐다드</option>
                             <option value="font-notoserif">본명조</option>
                             <option value="font-gowun">고운바탕</option>
@@ -191,39 +200,37 @@
                         </select>
                     </div>
                 </div>
-                <div class="grid grid-cols-2 gap-2 mb-3">
-                    <select id="font_style" onchange="updatePreview()" class="text-xs p-1.5 border rounded">
+                <div class="grid grid-cols-2 gap-3 mb-4">
+                    <select id="font_style" onchange="updatePreview()">
                         <option value="normal">기본 두께</option>
                         <option value="italic">기울임 (Italic)</option>
                         <option value="bold" selected>굵게 (Bold)</option>
                         <option value="bold-italic">굵고 기울임</option>
                     </select>
-                    <select id="text_align" onchange="updatePreview()" class="text-xs p-1.5 border rounded">
+                    <select id="text_align" onchange="updatePreview()">
                         <option value="text-center">가운데 정렬</option>
                         <option value="text-left">왼쪽 정렬</option>
                         <option value="text-right">오른쪽 정렬</option>
                     </select>
                 </div>
                 
-                <!-- 새로 추가된 폰트 색상 & 이미지 하단 그라데이션 색상/세기 선택 영역 -->
-                <div class="grid grid-cols-2 gap-2 mb-2">
-                    <div class="flex flex-col gap-1">
-                        <span class="text-[10px] text-zinc-500 font-bold">폰트 색상</span>
-                        <input type="color" id="pair_text_color" value="#ffffff" class="h-8 w-full p-1 cursor-pointer border-zinc-200 rounded" oninput="updatePreview()">
+                <div class="grid grid-cols-2 gap-3 mb-4 border-t border-slate-100 pt-4">
+                    <div class="flex flex-col gap-1.5">
+                        <span class="text-[10px] text-slate-500 font-bold uppercase">폰트 색상</span>
+                        <input type="color" id="pair_text_color" value="#ffffff" oninput="updatePreview()">
                     </div>
-                    <div class="flex flex-col gap-1">
-                        <span class="text-[10px] text-zinc-500 font-bold">하단 그라데이션 색상</span>
-                        <input type="color" id="pair_overlay_color" value="#000000" class="h-8 w-full p-1 cursor-pointer border-zinc-200 rounded" oninput="updatePreview()">
+                    <div class="flex flex-col gap-1.5">
+                        <span class="text-[10px] text-slate-500 font-bold uppercase">하단 그라데이션 색상</span>
+                        <input type="color" id="pair_overlay_color" value="#000000" oninput="updatePreview()">
                     </div>
                 </div>
-                <div class="flex justify-between items-center mb-3">
-                    <span class="text-[10px] font-bold text-zinc-600">그라데이션 진하기</span>
-                    <!-- max 값을 200으로 대폭 늘려 더 짙게 차오르도록 수정 -->
-                    <input type="range" id="pair_overlay_opacity" min="0" max="200" value="95" class="w-2/3" oninput="updatePreview()">
+                <div class="flex justify-between items-center gap-4 mb-4">
+                    <span class="text-[11px] font-bold text-slate-500 whitespace-nowrap">그라데이션 진하기</span>
+                    <input type="range" id="pair_overlay_opacity" min="0" max="200" value="95" oninput="updatePreview()">
                 </div>
                 
                 <div class="mb-1">
-                    <select id="text_shadow" onchange="updatePreview()" class="text-xs p-1.5 border rounded w-full">
+                    <select id="text_shadow" onchange="updatePreview()">
                         <option value="dark">어두운 그림자 (밝은 이미지용)</option>
                         <option value="light">밝은 테두리 (어두운 이미지용)</option>
                         <option value="none">그림자 없음</option>
@@ -233,34 +240,34 @@
 
             <div class="sub-group">
                 <span class="sub-group-title">상세 간격 조절</span>
-                <div class="space-y-3">
-                    <div class="flex justify-between items-center">
-                        <span class="text-[10px] font-bold text-zinc-600">센터레터 크기</span>
-                        <input type="range" id="size_center" min="10" max="40" value="14" class="w-2/3" oninput="updatePreview()">
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center gap-4">
+                        <span class="text-[11px] font-bold text-slate-500 whitespace-nowrap">센터레터 크기</span>
+                        <input type="range" id="size_center" min="10" max="40" value="14" oninput="updatePreview()">
                     </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-[10px] font-bold text-zinc-600">센터레터 상하 위치</span>
-                        <input type="range" id="pos_center" min="-100" max="100" value="0" class="w-2/3" oninput="updatePreview()">
+                    <div class="flex justify-between items-center gap-4">
+                        <span class="text-[11px] font-bold text-slate-500 whitespace-nowrap">센터레터 상하 위치</span>
+                        <input type="range" id="pos_center" min="-100" max="100" value="0" oninput="updatePreview()">
                     </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-[10px] font-bold text-zinc-600">제목 크기</span>
-                        <input type="range" id="size_title" min="20" max="100" value="56" class="w-2/3" oninput="updatePreview()">
+                    <div class="flex justify-between items-center gap-4">
+                        <span class="text-[11px] font-bold text-slate-500 whitespace-nowrap">제목 크기</span>
+                        <input type="range" id="size_title" min="20" max="100" value="56" oninput="updatePreview()">
                     </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-[10px] font-bold text-zinc-600">본문 크기</span>
-                        <input type="range" id="size_body" min="12" max="60" value="24" class="w-2/3" oninput="updatePreview()">
+                    <div class="flex justify-between items-center gap-4">
+                        <span class="text-[11px] font-bold text-slate-500 whitespace-nowrap">본문 크기</span>
+                        <input type="range" id="size_body" min="12" max="60" value="24" oninput="updatePreview()">
                     </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-[10px] font-bold text-zinc-600">자간 (글자간격)</span>
-                        <input type="range" id="spacing_letter" min="-0.1" max="0.5" step="0.01" value="0" class="w-2/3" oninput="updatePreview()">
+                    <div class="flex justify-between items-center gap-4">
+                        <span class="text-[11px] font-bold text-slate-500 whitespace-nowrap">자간 (글자간격)</span>
+                        <input type="range" id="spacing_letter" min="-0.1" max="0.5" step="0.01" value="0" oninput="updatePreview()">
                     </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-[10px] font-bold text-zinc-600">행간 (줄간격)</span>
-                        <input type="range" id="spacing_line" min="1" max="3" step="0.1" value="1.4" class="w-2/3" oninput="updatePreview()">
+                    <div class="flex justify-between items-center gap-4">
+                        <span class="text-[11px] font-bold text-slate-500 whitespace-nowrap">행간 (줄간격)</span>
+                        <input type="range" id="spacing_line" min="1" max="3" step="0.1" value="1.4" oninput="updatePreview()">
                     </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-[10px] font-bold text-zinc-600">문단 간격</span>
-                        <input type="range" id="spacing_para" min="0" max="80" value="16" class="w-2/3" oninput="updatePreview()">
+                    <div class="flex justify-between items-center gap-4">
+                        <span class="text-[11px] font-bold text-slate-500 whitespace-nowrap">문단 간격</span>
+                        <input type="range" id="spacing_para" min="0" max="80" value="16" oninput="updatePreview()">
                     </div>
                 </div>
             </div>
@@ -276,14 +283,16 @@
                     <label>플리 배경 이미지 첨부</label>
                     <div class="flex gap-2 mb-3">
                         <input type="file" id="f_bg_img" accept="image/*" class="hidden" onchange="handleFileUpload(event, 'bg_img')">
-                        <button type="button" onclick="document.getElementById('f_bg_img').click()" class="btn-outline w-full py-1.5">이미지 첨부하기</button>
-                        <button type="button" onclick="removeImage('bg_img')" class="btn-outline text-red-500 py-1.5">삭제</button>
+                        <button type="button" onclick="document.getElementById('f_bg_img').click()" class="btn-outline flex-1">이미지 첨부</button>
+                        <button type="button" onclick="removeImage('bg_img')" class="btn-outline btn-danger px-3">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
                     </div>
                 </div>
-                <div class="grid grid-cols-2 gap-3 mb-3">
+                <div class="grid grid-cols-2 gap-3 mb-3 border-t border-slate-100 pt-3">
                     <div class="input-group mb-0">
                         <label>배경 색상 (단색)</label>
-                        <input type="color" id="bg_color" value="#e4e4e7" class="h-10 p-1 cursor-pointer w-full rounded-md border-zinc-200" oninput="updatePreview()">
+                        <input type="color" id="bg_color" value="#e4e4e7" oninput="updatePreview()">
                     </div>
                     <div class="input-group mb-0">
                         <label>글씨 & 박스 톤</label>
@@ -311,45 +320,46 @@
                     <label>중앙 라벨 이미지 (선택)</label>
                     <div class="flex gap-2">
                         <input type="file" id="f_vinyl_img" accept="image/*" class="hidden" onchange="handleFileUpload(event, 'vinyl_img')">
-                        <button type="button" onclick="document.getElementById('f_vinyl_img').click()" class="btn-outline w-full py-1.5 text-xs">사진 첨부</button>
-                        <button type="button" onclick="removeImage('vinyl_img')" class="btn-outline text-red-500 py-1.5 text-xs">삭제</button>
+                        <button type="button" onclick="document.getElementById('f_vinyl_img').click()" class="btn-outline flex-1">사진 첨부</button>
+                        <button type="button" onclick="removeImage('vinyl_img')" class="btn-outline btn-danger px-3">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
                     </div>
                 </div>
-                <div class="flex justify-between items-center">
-                    <span class="text-xs font-bold text-zinc-600">사진이 없을 때 기본 색상</span>
-                    <input type="color" id="vinyl_color" value="#ff5555" class="h-8 w-1/2 p-1 cursor-pointer border-zinc-200 rounded" oninput="updatePreview()">
+                <div class="flex justify-between items-center gap-4">
+                    <span class="text-[11px] font-bold text-slate-500 whitespace-nowrap">사진 없을 때 색상</span>
+                    <input type="color" id="vinyl_color" value="#ff5555" class="w-1/2" oninput="updatePreview()">
                 </div>
             </div>
 
             <div class="sub-group">
                 <span class="sub-group-title">플리 텍스트 스타일</span>
-                <div class="grid grid-cols-2 gap-2 mb-3">
-                    <select id="pl_font_family" onchange="updatePreview()" class="text-xs p-1.5 border rounded w-full">
+                <div class="grid grid-cols-2 gap-3 mb-4">
+                    <select id="pl_font_family" onchange="updatePreview()">
                         <option value="font-pretendard" selected>프리텐다드</option>
                         <option value="font-notoserif">본명조</option>
                         <option value="font-gowun">고운바탕</option>
                         <option value="font-gmarket">지마켓산스</option>
                     </select>
-                    <select id="pl_font_style" onchange="updatePreview()" class="text-xs p-1.5 border rounded w-full">
+                    <select id="pl_font_style" onchange="updatePreview()">
                         <option value="normal">기본 두께</option>
                         <option value="italic">기울임 (Italic)</option>
                         <option value="bold">굵게 (Bold)</option>
                         <option value="bold-italic">굵고 기울임</option>
                     </select>
                 </div>
-                <div class="space-y-3 border-t border-zinc-200 pt-3">
-                    <div class="flex justify-between items-center">
-                        <span class="text-[10px] font-bold text-zinc-600">자간 (글자간격)</span>
-                        <input type="range" id="pl_spacing_letter" min="-0.1" max="0.3" step="0.01" value="0" class="w-2/3" oninput="updatePreview()">
+                <div class="space-y-4 border-t border-slate-100 pt-4">
+                    <div class="flex justify-between items-center gap-4">
+                        <span class="text-[11px] font-bold text-slate-500 whitespace-nowrap">자간 (글자간격)</span>
+                        <input type="range" id="pl_spacing_letter" min="-0.1" max="0.3" step="0.01" value="0" oninput="updatePreview()">
                     </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-[10px] font-bold text-zinc-600">행간 (가사 줄간격)</span>
-                        <input type="range" id="pl_spacing_line" min="1" max="2.5" step="0.1" value="1.6" class="w-2/3" oninput="updatePreview()">
+                    <div class="flex justify-between items-center gap-4">
+                        <span class="text-[11px] font-bold text-slate-500 whitespace-nowrap">행간 (가사 줄간격)</span>
+                        <input type="range" id="pl_spacing_line" min="1" max="2.5" step="0.1" value="1.6" oninput="updatePreview()">
                     </div>
                 </div>
             </div>
 
-            <!-- 새로 추가된 커미션 워터마크 영역 -->
             <div class="sub-group">
                 <span class="sub-group-title">워터마크 (커미션 정보)</span>
                 <div class="input-group mb-0">
@@ -363,12 +373,16 @@
             =========================================== -->
             <div class="section-title mt-10">3. 플레이리스트 내용</div>
             
-            <div class="bg-zinc-100 border border-zinc-200 p-3 rounded-lg mb-4">
-                <p class="text-[11px] text-zinc-800 font-bold mb-2">가사 형광펜 하이라이트 기능</p>
-                <p class="text-[10px] text-zinc-600 mb-3">가사 입력 시 문장 맨 앞에 <strong class="text-red-500">*</strong> 기호를 붙이면 그 줄에 형광펜이 그어집니다.<br>(예: *여기에 가사를 입력하세요)</p>
-                <div class="flex justify-between items-center border-t border-zinc-200 pt-2">
-                    <span class="text-[10px] font-bold text-zinc-800">형광펜 색상</span>
-                    <input type="color" id="hl_color" value="#ffeb3b" class="h-6 w-1/2 p-0 cursor-pointer border-zinc-200" oninput="updatePreview()">
+            <!-- 형광펜 안내 박스 (모던 스타일) -->
+            <div class="bg-indigo-50 border border-indigo-100 p-4 rounded-xl mb-5 flex gap-3 items-start">
+                <svg class="w-5 h-5 text-indigo-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <div class="flex-1">
+                    <p class="text-[12px] text-indigo-900 font-bold mb-1">가사 형광펜 하이라이트</p>
+                    <p class="text-[11px] text-indigo-700/80 mb-3 leading-relaxed">가사 입력 시 문장 맨 앞에 <strong class="text-indigo-600">*</strong> 기호를 붙이면 그 줄에 형광펜이 그어집니다. (예: *여기에 가사를 입력하세요)</p>
+                    <div class="flex justify-between items-center border-t border-indigo-200/50 pt-3">
+                        <span class="text-[11px] font-bold text-indigo-900">형광펜 색상</span>
+                        <input type="color" id="hl_color" value="#ffeb3b" class="!h-6 !w-16 !p-0 border-none" oninput="updatePreview()">
+                    </div>
                 </div>
             </div>
 
@@ -376,16 +390,20 @@
                 <!-- JS로 동적 렌더링 됨 -->
             </div>
             
-            <button type="button" onclick="addSong()" class="w-full mt-4 bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-3 rounded-lg text-sm transition-colors shadow-sm">+ 서브 곡 추가하기</button>
+            <button type="button" onclick="addSong()" class="w-full mt-6 bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 rounded-xl text-sm transition-all shadow-md flex items-center justify-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                서브 곡 추가하기
+            </button>
         </div>
     </aside>
 
     <!-- 오른쪽(모바일은 상단): 미리보기 패널 -->
-    <main id="preview-main" class="w-full h-[45dvh] lg:flex-1 lg:h-full bg-zinc-800 p-2 lg:p-8 relative overflow-hidden flex items-center justify-center shrink-0">
+    <main id="preview-main" class="w-full h-[45dvh] lg:flex-1 lg:h-full bg-slate-200 p-2 lg:p-8 relative overflow-hidden flex items-center justify-center shrink-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:16px_16px]">
         
         <!-- 모바일 전용 토글 버튼 (화면 크게보기) -->
-        <button id="mobile-preview-toggle" onclick="toggleMobilePreview()" class="lg:hidden absolute bottom-3 right-3 bg-black/60 hover:bg-black/80 text-white px-4 py-1.5 rounded-full text-[11px] font-bold z-50 backdrop-blur-md shadow-lg border border-white/20 transition-all">
-            🔍 크게 보기
+        <button id="mobile-preview-toggle" onclick="toggleMobilePreview()" class="lg:hidden absolute bottom-3 right-3 bg-slate-900/80 hover:bg-slate-900 text-white px-4 py-2 rounded-full text-[12px] font-bold z-50 backdrop-blur-md shadow-xl border border-white/10 transition-all flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path></svg>
+            크게 보기
         </button>
 
         <!-- 캡처될 실제 영역 (1400 x 1000 - 7:5 비율) -->
@@ -393,14 +411,9 @@
             
             <!-- [왼쪽 영역] 페어 이미지 (30% 너비) -->
             <div id="out_left_panel" class="relative w-[30%] h-full shrink-0 overflow-hidden bg-zinc-200 z-40 shadow-[10px_0_25px_rgba(0,0,0,0.25)] transition-shadow duration-300">
-                
-                <!-- 페어 배경 이미지 (bg-no-repeat 추가됨) -->
                 <div id="out_pair_img" class="absolute inset-0 bg-cover bg-no-repeat"></div>
-                
-                <!-- 텍스트 보호용 짙은 그라데이션 (ID 추가됨) -->
                 <div id="out_pair_gradient" class="absolute bottom-0 left-0 w-full h-[60%] pointer-events-none z-10" style="background: linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0.47), transparent);"></div>
                 
-                <!-- 세분화된 텍스트 영역 -->
                 <div class="absolute bottom-16 left-0 w-full px-8 z-20 flex flex-col" id="out_left_text_container">
                     <p id="out_pair_center" class="opacity-90 break-keep">센터레터를 입력하세요</p>
                     <h1 id="out_pair_title" class="break-keep whitespace-pre-line">여기에 메인 제목을 입력하세요</h1>
@@ -408,17 +421,13 @@
                     <p id="out_pair_catch" class="whitespace-pre-line opacity-80 break-keep">여기에 캐치 프레이즈를 입력하세요</p>
                 </div>
 
-                <!-- 커미션주 워터마크 표시 (페어 이미지 영역 하단으로 완전히 이동) -->
                 <div id="out_commissioner" class="absolute bottom-6 z-30 text-[10px] font-medium tracking-[0.15em] whitespace-nowrap hidden" style="display: none;"></div>
             </div>
 
             <!-- [중앙 레코드판 디바이더] -->
             <div id="out_vinyl_divider" class="absolute top-1/2 left-[30%] z-30 -translate-x-1/2 -translate-y-1/2 w-[450px] h-[450px] transition-all duration-300">
-                <!-- 정지된 레코드판 본체 -->
                 <div class="w-full h-full rounded-full bg-[#111] shadow-[15px_0_30px_rgba(0,0,0,0.5)] flex items-center justify-center" style="background-image: repeating-radial-gradient(#111, #111 4px, #222 5px, #111 6px);">
-                    <!-- 레코드 라벨 (가운데 원 - 사진 첨부 가능) -->
                     <div class="w-[140px] h-[140px] rounded-full border-2 border-[#111] flex items-center justify-center bg-cover bg-center" id="out_vinyl_label" style="background-color: #ff5555;">
-                        <!-- 뚫린 구멍 -->
                         <div class="w-[18px] h-[18px] rounded-full bg-[#e4e4e7]" id="out_vinyl_hole"></div>
                     </div>
                 </div>
@@ -426,14 +435,10 @@
 
             <!-- [오른쪽 영역] 플레이리스트 (70% 너비) -->
             <div id="out_right_panel" class="relative w-[70%] h-full shrink-0 overflow-hidden">
-                <!-- 플리 배경색 -->
                 <div id="out_bg_color" class="absolute inset-0 z-0 bg-[#e4e4e7]"></div>
-                <!-- 플리 배경 이미지 (블러 처리됨) -->
                 <div id="out_bg_img" class="absolute inset-[-5%] z-10 bg-cover bg-center" style="filter: blur(8px); opacity: 0.6;"></div>
-                <!-- 패턴 오버레이 -->
                 <div id="out_bg_pattern" class="absolute inset-0 z-20"></div>
 
-                <!-- 곡 리스트 컨텐츠 -->
                 <div id="out_playlist_inner" class="absolute inset-0 z-30 flex flex-col justify-center py-12 pr-16 pl-[260px] overflow-visible transition-all duration-300">
                     <div class="w-full max-w-3xl font-pretendard" id="out_playlist">
                         <!-- JS로 동적 렌더링 됨 -->
@@ -445,34 +450,34 @@
     </main>
 
     <!-- 공지사항 팝업 열기 버튼 -->
-    <button id="notice-btn" onclick="openNotice()" class="fixed bottom-6 left-6 bg-zinc-800 text-white w-10 h-10 rounded-full shadow-xl flex items-center justify-center text-lg z-40 transition-transform hover:scale-110" title="공지사항">
+    <button id="notice-btn" onclick="openNotice()" class="fixed bottom-6 left-6 bg-slate-900 text-white w-12 h-12 rounded-full shadow-xl flex items-center justify-center text-xl z-40 transition-transform hover:scale-110 border-2 border-white/20" title="공지사항">
         📢
     </button>
 
     <!-- 공지사항 모달 창 -->
-    <div id="notice-modal" class="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 backdrop-blur-sm px-4">
+    <div id="notice-modal" class="fixed inset-0 bg-slate-900/60 z-[100] flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 backdrop-blur-sm px-4">
         <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden transform scale-95 transition-transform duration-300" id="notice-content">
-            <div class="bg-zinc-900 text-white px-6 py-4 flex justify-between items-center">
-                <h2 class="font-bold text-lg">📢 공지사항</h2>
-                <button onclick="closeNotice()" class="text-zinc-400 hover:text-white transition-colors text-xl leading-none">&times;</button>
+            <div class="bg-slate-900 text-white px-6 py-4 flex justify-between items-center">
+                <h2 class="font-bold text-lg flex items-center gap-2">📢 공지사항</h2>
+                <button onclick="closeNotice()" class="text-slate-400 hover:text-white transition-colors text-2xl leading-none">&times;</button>
             </div>
-            <div class="p-6 max-h-[65vh] overflow-y-auto text-sm text-zinc-700 space-y-5">
+            <div class="p-6 max-h-[65vh] overflow-y-auto text-sm text-slate-700 space-y-5">
                 <div>
-                    <h3 class="font-bold text-zinc-900 mb-2 text-base">[이용 및 편집 관련 안내]</h3>
+                    <h3 class="font-bold text-slate-900 mb-2 text-base">[이용 및 편집 관련 안내]</h3>
                     <ul class="list-disc pl-5 space-y-1.5 opacity-90">
                         <li><strong>최적화 환경:</strong> 본 틀은 PC 기준으로 제작되었습니다.</li>
                     </ul>
                 </div>
                 <div>
-                    <h3 class="font-bold text-zinc-900 mb-2 text-base">[저장 방식 안내]</h3>
+                    <h3 class="font-bold text-slate-900 mb-2 text-base">[저장 방식 안내]</h3>
                     <ul class="list-disc pl-5 space-y-1.5 opacity-90">
                         <li><strong>지원 형식:</strong> 이미지</li>
                         <li>이미지 저장 시 약간의 시간이 소요되므로 잠시 기다려 주세요.</li>
                     </ul>
                 </div>
             </div>
-            <div class="bg-zinc-50 px-6 py-4 border-t border-zinc-200 text-right">
-                <button onclick="closeNotice()" class="bg-zinc-800 hover:bg-zinc-700 text-white px-6 py-2 rounded-lg font-bold text-sm transition-colors shadow-sm">확인</button>
+            <div class="bg-slate-50 px-6 py-4 border-t border-slate-200 text-right">
+                <button onclick="closeNotice()" class="bg-slate-900 hover:bg-slate-800 text-white px-6 py-2.5 rounded-xl font-bold text-sm transition-colors shadow-sm">확인했습니다</button>
             </div>
         </div>
     </div>
@@ -480,7 +485,7 @@
     <script>
         // 전역 상태 데이터
         let state = {
-            layoutReversed: false, // 레이아웃 반전 상태
+            layoutReversed: false,
             pairImgBase64: '',
             bgImgBase64: '',
             vinylImgBase64: '',
@@ -493,9 +498,8 @@
             ]
         };
 
-        const EMPTY_COVER = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiM4MDgwODAiLz48L3N2Zz4=';
+        const EMPTY_COVER = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiNlMmU4ZjAiLz48L3N2Zz4='; // 회색 톤 조정
 
-        // 공지사항 팝업 기능
         function openNotice() {
             const modal = document.getElementById('notice-modal');
             const content = document.getElementById('notice-content');
@@ -512,23 +516,17 @@
             content.classList.add('scale-95');
         }
 
-        // 창 크기에 맞춰 미리보기 스케일링 (모바일 패딩 대응)
         function resizePreview() {
             const container = document.getElementById('preview-main');
             const target = document.getElementById('capture-target');
-            
-            // 모바일일 땐 여백을 줄여서 더 크게 보이게 설정
             const padding = window.innerWidth < 1024 ? 16 : 40;
-            
             const scaleX = (container.clientWidth - padding) / 1400;
             const scaleY = (container.clientHeight - padding) / 1000;
             const scale = Math.min(scaleX, scaleY, 1); 
-            
             target.style.transform = `scale(${scale})`;
         }
         window.addEventListener('resize', resizePreview);
 
-        // 모바일 전용: 미리보기 크게보기/편집하기 토글 로직
         let isMobilePreviewExpanded = false;
         function toggleMobilePreview() {
             const editor = document.getElementById('editor-aside');
@@ -538,30 +536,24 @@
             isMobilePreviewExpanded = !isMobilePreviewExpanded;
 
             if (isMobilePreviewExpanded) {
-                // 미리보기 전체화면
                 editor.classList.replace('h-[55dvh]', 'h-[0dvh]');
-                editor.classList.add('overflow-hidden'); // 닫힐때 내용 안보이게
+                editor.classList.add('overflow-hidden');
                 preview.classList.replace('h-[45dvh]', 'h-[100dvh]');
-                btn.innerHTML = '✏️ 편집하기';
+                btn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg> 편집하기';
             } else {
-                // 원래 분할 화면으로 복구
                 editor.classList.remove('overflow-hidden');
                 editor.classList.replace('h-[0dvh]', 'h-[55dvh]');
                 preview.classList.replace('h-[100dvh]', 'h-[45dvh]');
-                btn.innerHTML = '🔍 크게 보기';
+                btn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path></svg> 크게 보기';
             }
-            
-            // 애니메이션이 끝난 후 스케일 재계산
             setTimeout(resizePreview, 310);
         }
 
-        // 레이아웃 반전 토글
         function toggleLayout() {
             state.layoutReversed = !state.layoutReversed;
             updatePreview();
         }
 
-        // 노래 추가/삭제/이동 로직
         function generateId() { return Math.random().toString(36).substr(2, 9); }
         function addSong() {
             if(state.songs.length >= 7) { alert('곡은 최대 7개까지만 추가할 수 있습니다.'); return; }
@@ -581,7 +573,6 @@
             renderEditor(); updatePreview();
         }
 
-        // 파일 업로드 처리
         function handleFileUpload(event, targetType, songIndex = null) {
             const file = event.target.files[0];
             if (!file) return;
@@ -603,7 +594,6 @@
             updatePreview();
         }
 
-        // 에디터 렌더링
         function renderEditor() {
             const container = document.getElementById('playlist-editor');
             let html = '';
@@ -611,36 +601,43 @@
             state.songs.forEach((song, i) => {
                 const isMain = song.isMain;
                 html += `
-                <div class="bg-white border border-zinc-200 rounded-lg p-4 relative shadow-sm">
-                    <div class="flex justify-between items-center mb-3 pb-2 border-b border-zinc-100">
-                        <span class="font-bold text-sm text-zinc-900">${isMain ? '👑 메인 곡' : '🎵 서브 곡'}</span>
+                <div class="bg-white border border-slate-200 rounded-xl p-5 relative shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">
+                        <span class="font-bold text-sm ${isMain ? 'text-indigo-600' : 'text-slate-800'} flex items-center gap-1.5">
+                            ${isMain ? '👑 메인 곡' : '🎵 서브 곡'}
+                        </span>
                         ${!isMain ? `
-                        <div class="flex gap-1">
-                            <button onclick="moveSong(${i}, -1)" class="bg-zinc-100 hover:bg-zinc-200 px-2 py-0.5 rounded text-[10px] transition-colors text-zinc-600">▲</button>
-                            <button onclick="moveSong(${i}, 1)" class="bg-zinc-100 hover:bg-zinc-200 px-2 py-0.5 rounded text-[10px] transition-colors text-zinc-600">▼</button>
-                            <button onclick="removeSong(${i})" class="text-red-500 font-bold ml-2 text-xs hover:underline">삭제</button>
+                        <div class="flex gap-1.5">
+                            <button onclick="moveSong(${i}, -1)" class="bg-slate-50 hover:bg-slate-100 border border-slate-200 w-7 h-7 flex items-center justify-center rounded-md text-slate-500 transition-colors">▲</button>
+                            <button onclick="moveSong(${i}, 1)" class="bg-slate-50 hover:bg-slate-100 border border-slate-200 w-7 h-7 flex items-center justify-center rounded-md text-slate-500 transition-colors">▼</button>
+                            <button onclick="removeSong(${i})" class="text-red-500 font-bold ml-2 text-xs hover:underline flex items-center gap-1">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                삭제
+                            </button>
                         </div>
                         ` : ''}
                     </div>
                     
-                    <div class="input-group mb-2">
+                    <div class="input-group mb-3">
                         <label>앨범 커버</label>
                         <div class="flex gap-2">
                             <input type="file" id="f_cover_${i}" accept="image/*" class="hidden" onchange="handleFileUpload(event, 'song_cover', ${i})">
-                            <button type="button" onclick="document.getElementById('f_cover_${i}').click()" class="btn-outline w-full py-1.5 text-xs">첨부</button>
-                            <button type="button" onclick="removeImage('song_cover', ${i})" class="btn-outline text-red-500 py-1.5 text-xs">삭제</button>
+                            <button type="button" onclick="document.getElementById('f_cover_${i}').click()" class="btn-outline flex-1 text-xs">첨부</button>
+                            <button type="button" onclick="removeImage('song_cover', ${i})" class="btn-outline btn-danger px-3">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            </button>
                         </div>
                     </div>
                     
-                    <div class="grid grid-cols-2 gap-2 mb-2">
+                    <div class="grid grid-cols-2 gap-3 mb-2">
                         <div class="input-group mb-0"><label>제목</label><input type="text" value="${song.title}" oninput="state.songs[${i}].title=this.value; updatePreview()"></div>
                         <div class="input-group mb-0"><label>아티스트</label><input type="text" value="${song.artist}" oninput="state.songs[${i}].artist=this.value; updatePreview()"></div>
                     </div>
                     
                     ${isMain ? `
-                    <div class="input-group mb-0 mt-3">
+                    <div class="input-group mb-0 mt-4 border-t border-slate-100 pt-4">
                         <label>가사 / 코멘트 (맨 앞에 *를 붙이면 형광펜)</label>
-                        <textarea class="h-20" oninput="state.songs[${i}].lyrics=this.value; updatePreview()">${song.lyrics}</textarea>
+                        <textarea class="h-24 resize-none" oninput="state.songs[${i}].lyrics=this.value; updatePreview()">${song.lyrics}</textarea>
                     </div>
                     ` : ''}
                 </div>`;
@@ -648,9 +645,7 @@
             container.innerHTML = html;
         }
 
-        // 미리보기 렌더링 업데이트
         function updatePreview() {
-            /* --- 0. 레이아웃 반전 처리 --- */
             const target = document.getElementById('capture-target');
             const leftPanel = document.getElementById('out_left_panel');
             const vinylDivider = document.getElementById('out_vinyl_divider');
@@ -658,12 +653,9 @@
 
             if (state.layoutReversed) {
                 target.classList.add('flex-row-reverse');
-                // 그림자 방향 반전
                 leftPanel.classList.remove('shadow-[10px_0_25px_rgba(0,0,0,0.25)]');
                 leftPanel.classList.add('shadow-[-10px_0_25px_rgba(0,0,0,0.25)]');
-                // 레코드판 위치 반전
                 vinylDivider.style.left = '70%';
-                // 플리 여백 반전
                 playlistInner.classList.remove('pl-[260px]', 'pr-16');
                 playlistInner.classList.add('pr-[260px]', 'pl-16');
             } else {
@@ -675,7 +667,6 @@
                 playlistInner.classList.add('pl-[260px]', 'pr-16');
             }
 
-            /* --- 1. 왼쪽 패널 텍스트 & 스타일 처리 --- */
             const centerEl = document.getElementById('out_pair_center');
             const titleEl = document.getElementById('out_pair_title');
             const subEl = document.getElementById('out_pair_sub');
@@ -690,13 +681,11 @@
             const fontTitle = document.getElementById('font_title').value;
             const fontBody = document.getElementById('font_body').value;
             
-            // 폰트 클래스 덮어쓰기
             centerEl.className = `opacity-90 break-keep ${fontBody}`;
             titleEl.className = `break-keep whitespace-pre-line ${fontTitle}`;
             subEl.className = `opacity-90 break-keep whitespace-pre-line ${fontBody}`;
             catchEl.className = `whitespace-pre-line opacity-80 break-keep ${fontBody}`;
 
-            // 스타일 (굵기, 기울임) 적용
             const fontStyle = document.getElementById('font_style').value;
             const applyStyle = (el) => {
                 if(fontStyle === 'italic') el.classList.add('italic');
@@ -707,16 +696,13 @@
 
             const textAlign = document.getElementById('text_align').value;
             const textShadow = document.getElementById('text_shadow').value;
-            
-            // 사용자가 선택한 폰트 색상 및 그라데이션 색상/세기
             const textColor = document.getElementById('pair_text_color').value;
             const overlayColor = document.getElementById('pair_overlay_color').value;
             const overlayOpacitySlider = document.getElementById('pair_overlay_opacity').value;
-            const overlayOpacityVal = Math.min(overlayOpacitySlider / 100, 1.0); // 최대 투명도는 1.0으로 고정
+            const overlayOpacityVal = Math.min(overlayOpacitySlider / 100, 1.0); 
             
             containerEl.className = `absolute bottom-16 left-0 w-full px-8 z-20 flex flex-col ${textAlign}`;
             
-            // HEX 색상을 RGB로 변환하여 하단 그라데이션에 적용
             const hexToRgb = (hex) => {
                 const r = parseInt(hex.slice(1, 3), 16);
                 const g = parseInt(hex.slice(3, 5), 16);
@@ -725,32 +711,24 @@
             };
             const overlayRgb = hexToRgb(overlayColor);
             
-            // 슬라이더가 100을 넘어가면 하단 불투명 영역을 위로 끌어올려 더 짙게 만듦
             let bottomStop = "0%";
             let midOpacity = (overlayOpacityVal * 0.5).toFixed(2);
             
             if (overlayOpacitySlider > 100) {
-                const extra = overlayOpacitySlider - 100; // 0 ~ 100
-                bottomStop = `${extra * 0.5}%`; // 최대 50%까지 완전 불투명 영역 확장
-                midOpacity = (overlayOpacityVal * (0.5 + (extra * 0.005))).toFixed(2); // 중간 투명도도 함께 증가
+                const extra = overlayOpacitySlider - 100;
+                bottomStop = `${extra * 0.5}%`; 
+                midOpacity = (overlayOpacityVal * (0.5 + (extra * 0.005))).toFixed(2); 
             }
             
             document.getElementById('out_pair_gradient').style.background = `linear-gradient(to top, rgba(${overlayRgb}, ${overlayOpacityVal}) ${bottomStop}, rgba(${overlayRgb}, ${midOpacity}) 50%, transparent 100%)`;
 
             [centerEl, titleEl, subEl, catchEl].forEach(el => {
-                // 폰트 색상 적용
                 el.style.color = textColor;
-                
-                // 글자 그림자(텍스트 섀도우)는 원래 클래스 로직으로 복구
                 el.classList.remove('text-shadow-heavy', 'text-shadow-light');
-                if(textShadow === 'dark') {
-                    el.classList.add('text-shadow-heavy');
-                } else if(textShadow === 'light') {
-                    el.classList.add('text-shadow-light');
-                }
+                if(textShadow === 'dark') el.classList.add('text-shadow-heavy');
+                else if(textShadow === 'light') el.classList.add('text-shadow-light');
             });
 
-            // 간격 미세 컨트롤
             const sizeCenter = document.getElementById('size_center').value + 'px';
             const posCenter = document.getElementById('pos_center').value + 'px';
             const sizeTitle = document.getElementById('size_title').value + 'px';
@@ -772,12 +750,10 @@
             });
             catchEl.style.marginBottom = '0'; 
 
-            /* --- 2. 이미지 & 배경 처리 --- */
             const outPairImg = document.getElementById('out_pair_img');
             outPairImg.style.backgroundImage = state.pairImgBase64 ? `url('${state.pairImgBase64}')` : 'none';
             outPairImg.style.backgroundPosition = `${document.getElementById('pair_img_pos_x').value}% ${document.getElementById('pair_img_pos_y').value}%`;
             
-            // 이미지 크기 확대/축소 처리
             const imgScale = document.getElementById('pair_img_scale').value;
             if (imgScale === "0") {
                 outPairImg.style.backgroundSize = 'cover';
@@ -789,13 +765,11 @@
             document.getElementById('out_bg_color').style.backgroundColor = bgColor;
             document.getElementById('out_bg_img').style.backgroundImage = state.bgImgBase64 ? `url('${state.bgImgBase64}')` : 'none';
             
-            /* --- 레코드판 색상 & 이미지 적용 --- */
             const vinylLabel = document.getElementById('out_vinyl_label');
             vinylLabel.style.backgroundColor = document.getElementById('vinyl_color').value;
             vinylLabel.style.backgroundImage = state.vinylImgBase64 ? `url('${state.vinylImgBase64}')` : 'none';
             document.getElementById('out_vinyl_hole').style.backgroundColor = bgColor; 
 
-            /* --- 3. 테마 및 패턴 오버레이 --- */
             const theme = document.getElementById('theme_mode').value;
             const pattern = document.getElementById('bg_pattern').value;
             const isDark = theme === 'dark'; 
@@ -807,7 +781,6 @@
                 patternEl.classList.add(`pattern-${pattern}${suffix}`);
             }
 
-            // 플리 폰트 및 스타일 적용
             const plFont = document.getElementById('pl_font_family').value;
             const plFontStyle = document.getElementById('pl_font_style').value;
             const plLetterSpacing = document.getElementById('pl_spacing_letter').value + 'em';
@@ -823,17 +796,14 @@
 
             playlistContainer.style.letterSpacing = plLetterSpacing;
 
-            // 테마(글씨색/박스색) 클래스 제어
             const textClass = isDark ? 'text-white' : 'text-zinc-800';
             const subTextClass = isDark ? 'text-zinc-300' : 'text-zinc-500';
             const boxClass = isDark ? 'glass-box-dark' : 'glass-box';
 
-            /* --- 4. 커미션 워터마크 렌더링 (왼쪽 페어 이미지 하단으로 이동) --- */
             const commissionerInput = document.getElementById('commissioner_name').value.trim();
             const commissionerEl = document.getElementById('out_commissioner');
             
             if (commissionerInput) {
-                // 쉼표로 분리하여 양옆 공백 제거 후 ' │ ' 로 묶어주기
                 const names = commissionerInput.split(',').map(n => n.trim()).filter(n => n);
                 if (names.length > 0) {
                     commissionerEl.innerText = `ⓒ ${names.join(' │ ')}`;
@@ -845,7 +815,6 @@
                 commissionerEl.style.display = 'none';
             }
 
-            // 워터마크 위치를 페어 텍스트 정렬(좌/우/가운데) 방향에 맞춤
             let commAlignClass = 'left-8';
             let commTransform = '';
             if (textAlign === 'text-center') {
@@ -855,13 +824,10 @@
                 commAlignClass = 'right-8';
             }
 
-            // 플리 폰트와 상관없이 페어 이미지 쪽이므로 사용자가 선택한 폰트 색상을 반투명하게 적용
             commissionerEl.className = `absolute bottom-6 z-30 text-[10px] font-medium tracking-[0.15em] whitespace-nowrap transition-all duration-300 ${fontBody} ${commAlignClass} ${commTransform}`;
             commissionerEl.style.color = textColor;
             commissionerEl.style.opacity = '0.6';
             
-            /* --- 5. 플레이리스트 렌더링 --- */
-            // 형광펜 색상 rgba 변환
             const hlHex = document.getElementById('hl_color').value;
             const hlR = parseInt(hlHex.substr(1,2), 16);
             const hlG = parseInt(hlHex.substr(3,2), 16);
@@ -874,7 +840,6 @@
                 const coverSrc = song.cover || EMPTY_COVER;
                 const isMain = song.isMain;
                 
-                // 지그재그 배치 (반전 상태일 땐 마진 방향도 반전)
                 let alignClass = 'w-full';
                 if (!isMain) {
                     if (state.layoutReversed) {
@@ -886,7 +851,6 @@
                 const shapeClass = isMain ? 'shape-main' : (i%2===0 ? 'shape-sub' : 'shape-sub-alt');
 
                 if (isMain) {
-                    // 가사 형광펜 파싱
                     let parsedLyrics = song.lyrics.split('\n').map(line => {
                         if (line.trim().startsWith('*')) {
                             return `<span style="${hlStyle}">${line.replace('*', '').trim().replace(/</g, "&lt;")}</span>`;
@@ -894,7 +858,6 @@
                         return line.replace(/</g, "&lt;");
                     }).join('<br>');
 
-                    // 정지된 이퀄라이저 (높이 고정)
                     plHtml += `
                     <div class="${alignClass} ${boxClass} ${shapeClass} p-7">
                         <div class="flex items-center gap-7">
@@ -939,11 +902,8 @@
             playlistContainer.innerHTML = plHtml;
         }
 
-        // 이미지 저장
         function downloadImage() {
             const target = document.getElementById('capture-target');
-            
-            // 캡처 전 스케일 임시 해제
             const originalTransform = target.style.transform;
             target.style.transform = 'scale(1)';
 
@@ -959,8 +919,6 @@
                     link.download = 'pair_playlist_7x5.png';
                     link.href = dataUrl;
                     link.click();
-                    
-                    // 복구
                     target.style.transform = originalTransform;
                 }).catch(err => {
                     console.error('캡처 오류:', err);
@@ -970,12 +928,11 @@
             }, 300);
         }
 
-        // 초기화
         window.onload = () => {
             renderEditor();
             updatePreview();
             resizePreview();
-            openNotice(); // 페이지 로드 시 공지사항 팝업 띄우기
+            openNotice(); 
         };
     </script>
 </body>
