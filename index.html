@@ -958,6 +958,131 @@
         const IS_MOBILE = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ||
                           (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
+        // iOS/사파리는 캡처 시 box-shadow(blur)와 backdrop-filter를 네모난 회색 덩어리로 그려버림
+        // → 저장용 복제본에서만 해당 효과를 제거하고, canvas로 그린 그림자 이미지로 대체
+        const IS_SAFARI = /^((?!chrome|android|crios|fxios).)*safari/i.test(navigator.userAgent);
+        const NEEDS_SAFE = IS_MOBILE || IS_SAFARI;
+
+        /* ---- 그림자를 canvas로 직접 그려서 이미지로 삽입 (iOS 캔버스는 shadowBlur를 정상 지원) ---- /
+        function parseShadows(str) {
+            if (!str || str === 'none') return [];
+            return str.split(/,(?![^(]))/).map(part => {
+                part = part.trim();
+                if (/inset/.test(part)) return null;
+                const cm = part.match(/rgba?([^)]+)/);
+                if (!cm) return null;
+                const color = cm[0];
+                const nums = (part.replace(color, '').match(/-?[\d.]+(?=px)/g) || []).map(Number);
+                const am = color.match(/rgba([^,]+,[^,]+,[^,]+,\s*([\d.]+)/);
+                if (am && parseFloat(am[1]) === 0) return null;
+                return { color, ox: nums[0] || 0, oy: nums[1] || 0, blur: nums[2] || 0, spread: nums[3] || 0 };
+            }).filter(Boolean);
+        }
+
+        function getRadii(cs, w, h) {
+            const keys = ['borderTopLeftRadius', 'borderTopRightRadius', 'borderBottomRightRadius', 'borderBottomLeftRadius'];
+            let r = keys.map(k => {
+                const v = cs[k] || '0';
+                const n = parseFloat(v) || 0;
+                return v.indexOf('%') > -1 ? n / 100 * Math.min(w, h) : n;
+            });
+            const f = Math.min(1,
+                w / ((r[0] + r[1]) || 1), w / ((r[3] + r[2]) || 1),
+                h / ((r[0] + r[3]) || 1), h / ((r[1] + r[2]) || 1));
+            return r.map(v => v * f);
+        }
+
+        function roundRectPath(ctx, x, y, w, h, r) {
+            const tl = r[0], tr = r[1], br = r[2], bl = r[3];
+            ctx.beginPath();
+            ctx.moveTo(x + tl, y);
+            ctx.lineTo(x + w - tr, y);
+            ctx.arcTo(x + w, y, x + w, y + tr, tr);
+            ctx.lineTo(x + w, y + h - br);
+            ctx.arcTo(x + w, y + h, x + w - br, y + h, br);
+            ctx.lineTo(x + bl, y + h);
+            ctx.arcTo(x, y + h, x, y + h - bl, bl);
+            ctx.lineTo(x, y + tl);
+            ctx.arcTo(x, y, x + tl, y, tl);
+            ctx.closePath();
+        }
+
+        function buildShadowCanvas(w, h, radii, shadows) {
+            let pad = 0;
+            shadows.forEach(s => {
+                pad = Math.max(pad, s.blur + Math.abs(s.spread) + Math.max(Math.abs(s.ox), Math.abs(s.oy)));
+            });
+            pad = Math.ceil(pad) + 4;
+            const cw = Math.ceil(w + pad * 2), ch = Math.ceil(h + pad * 2);
+            const c = document.createElement('canvas');
+            c.width = cw; c.height = ch;
+            const ctx = c.getContext('2d');
+            const BIG = cw + 200; // 도형은 화면 밖에 그리고 그림자만 안으로 들여오는 기법
+
+            for (let i = shadows.length - 1; i >= 0; i--) {
+                const s = shadows[i];
+                ctx.save();
+                ctx.shadowColor = s.color;
+                ctx.shadowBlur = s.blur;
+                ctx.shadowOffsetX = s.ox + BIG;
+                ctx.shadowOffsetY = s.oy;
+                ctx.fillStyle = '#000';
+                roundRectPath(ctx, pad - s.spread - BIG, pad - s.spread, w + s.spread * 2, h + s.spread * 2,
+                    radii.map(r => Math.max(0, r + s.spread)));
+                ctx.fill();
+                ctx.restore();
+            }
+            // CSS box-shadow처럼 박스 안쪽 영역은 그림자를 지움 (반투명 박스 대응)
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.fillStyle = '#000';
+            roundRectPath(ctx, pad, pad, w, h, radii);
+            ctx.fill();
+            return { canvas: c, pad };
+        }
+
+        function applySafeMode(root) {
+            // 1) 그림자 있는 요소 수집
+            const targets = [];
+            root.querySelectorAll('*').forEach(el => {
+                const shadows = parseShadows(getComputedStyle(el).boxShadow);
+                if (shadows.length) targets.push({ el, shadows });
+            });
+
+            // 2) 위치 기준이 흔들리지 않도록 먼저 전부 positioned 처리 (레이아웃 영향 없음)
+            targets.forEach(({ el }) => {
+                if (getComputedStyle(el).position === 'static') el.style.position = 'relative';
+            });
+
+            // 3) 그림자 이미지 생성 후 요소 바로 앞에 삽입
+            targets.forEach(({ el, shadows }) => {
+                try {
+                    const cs = getComputedStyle(el);
+                    const w = el.offsetWidth, h = el.offsetHeight;
+                    if (!w || !h) return;
+                    const { canvas, pad } = buildShadowCanvas(w, h, getRadii(cs, w, h), shadows);
+                    const img = document.createElement('img');
+                    img.src = canvas.toDataURL('image/png');
+                    img.style.cssText = 'position:absolute;max-width:none;pointer-events:none;' +
+                        'left:' + (el.offsetLeft - pad) + 'px;top:' + (el.offsetTop - pad) + 'px;' +
+                        'width:' + canvas.width + 'px;height:' + canvas.height + 'px;';
+                    if (cs.zIndex !== 'auto') img.style.zIndex = cs.zIndex;
+                    el.parentNode.insertBefore(img, el);
+                } catch (e) {
+                    console.warn('그림자 생성 실패', e);
+                }
+            });
+
+            // 4) iOS에서 깨지는 효과 제거
+            root.querySelectorAll('*').forEach(el => {
+                el.style.boxShadow = 'none';
+                el.style.webkitBackdropFilter = 'none';
+                el.style.backdropFilter = 'none';
+            });
+            // 블러가 없어진 만큼 유리 박스를 살짝 더 불투명하게
+            root.querySelectorAll('.glass-box').forEach(el => { el.style.background = 'rgba(255,255,255,0.55)'; });
+            root.querySelectorAll('.glass-box-dark').forEach(el => { el.style.background = 'rgba(0,0,0,0.45)'; });
+        }
+
         async function downloadImage() {
             const source = document.getElementById('capture-target');
             const btn = document.getElementById('save-btn');
@@ -977,6 +1102,7 @@
                 stage = document.createElement('div');
                 stage.style.cssText = 'position:fixed;left:-20000px;top:0;width:1400px;height:1000px;overflow:hidden;pointer-events:none;';
                 const clone = source.cloneNode(true);
+                if (NEEDS_SAFE) applySafeMode(clone);
                 clone.removeAttribute('id');
                 clone.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
                 clone.classList.add('capturing');
