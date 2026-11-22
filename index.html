@@ -87,6 +87,11 @@
         #capture-area-container { display: flex; align-items: center; justify-content: center; }
         .preview-wrapper { width: 1400px; height: 1000px; position: relative; transform-origin: center; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); overflow: hidden; display: flex; flex-shrink: 0; transition: flex-direction 0.3s ease; }
 
+        /* 모바일 브라우저의 글자 자동 확대(레이아웃 깨짐 원인) 방지 /
+        .preview-wrapper, .preview-wrapper * { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+        / 저장용 복제본: 애니메이션/트랜지션 제거 */
+        .capturing, .capturing * { transition: none !important; animation: none !important; }
+
         /* 폰트 클래스 (신규 폰트 추가됨) */
         .font-pretendard { font-family: 'Pretendard', sans-serif; }
         .font-notoserif { font-family: 'Noto Serif KR', serif; }
@@ -510,7 +515,7 @@
                     <h3 class="font-bold text-slate-900 mb-2 text-base">[이용 및 편집 관련 안내]</h3>
                     <ul class="list-disc pl-5 space-y-1.5 opacity-90">
                         <li><strong>최적화 환경:</strong> 본 틀은 PC 기준으로 제작되었습니다.</li>
-                        <li>모바일에서는 크롬/사파리로 열어주세요. 카카오톡 등 인앱 브라우저에서는 저장이 안 될 수 있습니다.</li>
+                        <li>모바일에서는 크롬/사파리로 열어주세요. 카카오톡 등 인앱 브라우저에서는 저장이 안 될 수 있어요.</li>
                     </ul>
                 </div>
                 <div>
@@ -954,7 +959,7 @@
                           (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
         async function downloadImage() {
-            const target = document.getElementById('capture-target');
+            const source = document.getElementById('capture-target');
             const btn = document.getElementById('save-btn');
             const btnOrigin = btn.innerHTML;
             btn.innerHTML = '저장 중...';
@@ -962,25 +967,47 @@
 
             // 모바일은 2배(고화질)부터 시도하고, 실패하면 단계적으로 낮춤
             const ratios = IS_MOBILE ? [2, 1.5, 1] : [2];
-
-            // 화면 배율(scale)은 건드리지 않고, 캡처용 복제본에만 scale(1) 적용
-            const base = {
-                width: 1400,
-                height: 1000,
-                cacheBust: true,
-                style: { transform: 'scale(1)', transformOrigin: 'top left' }
-            };
+            let stage = null;
 
             try {
                 if (document.fonts && document.fonts.ready) await document.fonts.ready;
 
+                // 화면(모바일 좁은 뷰포트/축소 배율)과 무관하게 1400x1000 실제 크기로 레이아웃되도록
+                // 화면 밖에 복제본을 만들어서 그걸 캡처 (모바일 레이아웃 깨짐 방지)
+                stage = document.createElement('div');
+                stage.style.cssText = 'position:fixed;left:-20000px;top:0;width:1400px;height:1000px;overflow:hidden;pointer-events:none;';
+                const clone = source.cloneNode(true);
+                clone.removeAttribute('id');
+                clone.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
+                clone.classList.add('capturing');
+                clone.style.transform = 'none';
+                clone.style.width = '1400px';
+                clone.style.height = '1000px';
+                clone.style.margin = '0';
+                clone.style.boxShadow = 'none';
+                stage.appendChild(clone);
+                document.body.appendChild(stage);
+
+                // 레이아웃 확정 + 이미지 디코딩 대기
+                await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+                await Promise.all(Array.from(clone.querySelectorAll('img')).map(img =>
+                    img.decode ? img.decode().catch(() => {}) : Promise.resolve()
+                ));
+
+                const base = {
+                    width: 1400,
+                    height: 1000,
+                    cacheBust: true,
+                    style: { transform: 'none', margin: '0' }
+                };
+
                 // 워밍업 캡처: 폰트/이미지 로딩 (iOS 빈 이미지 방지). 낮은 배율이라 메모리 부담 없음
-                try { await window.htmlToImage.toPng(target, { ...base, pixelRatio: 0.3 }); } catch (e) { /* 무시 */ }
+                try { await window.htmlToImage.toPng(clone, { ...base, pixelRatio: 0.3 }); } catch (e) { /* 무시 */ }
 
                 let dataUrl = null;
                 for (const r of ratios) {
                     try {
-                        const url = await window.htmlToImage.toPng(target, { ...base, pixelRatio: r });
+                        const url = await window.htmlToImage.toPng(clone, { ...base, pixelRatio: r });
                         // 메모리 부족 시 빈(아주 작은) 이미지가 나오므로 크기로 검증
                         if (url && url.length > 20000) { dataUrl = url; break; }
                     } catch (e) {
@@ -999,8 +1026,9 @@
                 }
             } catch (err) {
                 console.error('캡처 오류:', err);
-                alert('캡처 중 오류가 발생했습니다.\n(카카오톡 등 인앱 브라우저라면 크롬/사파리로 열어주세요)');
+                alert('캡처 중 오류가 발생했습니다.\n(카카오톡/트위터 등 인앱 브라우저라면 크롬/사파리로 열어주세요)');
             } finally {
+                if (stage) stage.remove();
                 btn.innerHTML = btnOrigin;
                 btn.disabled = false;
             }
@@ -1048,10 +1076,36 @@
             };
         }
 
+        // 인앱 브라우저 감지 + 외부 브라우저 안내
+        function checkInApp() {
+            const ua = navigator.userAgent;
+            const isInApp = /Twitter|KAKAOTALK|Instagram|FBAN|FBAV|Line|NAVER|Daum/i.test(ua);
+            if (!isInApp) return;
+
+            const isAndroid = /Android/i.test(ua);
+            const bar = document.createElement('div');
+            bar.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9998;background:#0f172a;color:#fff;padding:10px 14px;font-size:12px;font-weight:700;display:flex;justify-content:space-between;align-items:center;gap:10px;';
+            bar.innerHTML = isAndroid
+                ? `<span>인앱 브라우저에서는 저장이 안 될 수 있어요</span>
+                   <button id="open-chrome" style="background:#6366f1;padding:6px 12px;border-radius:8px;white-space:nowrap;">크롬으로 열기</button>`
+                : `<span>우측 하단 ⋯ → "Safari로 열기"를 눌러주세요</span>
+                   <button id="close-bar" style="padding:6px 10px;">✕</button>`;
+            document.body.appendChild(bar);
+
+            const chromeBtn = bar.querySelector('#open-chrome');
+            if (chromeBtn) chromeBtn.onclick = () => {
+                location.href = 'intent://' + location.host + location.pathname +
+                    '#Intent;scheme=https;package=com.android.chrome;end';
+            };
+            const closeBtn = bar.querySelector('#close-bar');
+            if (closeBtn) closeBtn.onclick = () => bar.remove();
+        }
+
         window.onload = () => {
             renderEditor();
             updatePreview();
             resizePreview();
+            checkInApp();
             openNotice();
         };
     </script>
