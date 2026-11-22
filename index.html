@@ -1102,7 +1102,6 @@
                 stage = document.createElement('div');
                 stage.style.cssText = 'position:fixed;left:-20000px;top:0;width:1400px;height:1000px;overflow:hidden;pointer-events:none;';
                 const clone = source.cloneNode(true);
-                if (NEEDS_SAFE) applySafeMode(clone);
                 clone.removeAttribute('id');
                 clone.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
                 clone.classList.add('capturing');
@@ -1113,6 +1112,9 @@
                 clone.style.boxShadow = 'none';
                 stage.appendChild(clone);
                 document.body.appendChild(stage);
+
+                // DOM에 붙은 뒤에 실행해야 계산된 스타일/위치를 읽을 수 있음
+                if (NEEDS_SAFE) applySafeMode(clone);
 
                 // 레이아웃 확정 + 이미지 디코딩 대기
                 await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
@@ -1227,13 +1229,24 @@
             if (closeBtn) closeBtn.onclick = () => bar.remove();
         }
 
-        window.onload = () => {
-            renderEditor();
-            updatePreview();
-            resizePreview();
-            checkInApp();
-            openNotice();
-        };
+        // 초기화: 폰트/외부 리소스 로딩을 기다리지 않고 DOM이 준비되면 바로 실행
+        // (각 단계를 따로 감싸서 하나가 실패해도 나머지는 계속 실행)
+        function initApp() {
+            try { renderEditor(); } catch (e) { console.error(e); }
+            try { updatePreview(); } catch (e) { console.error(e); }
+            try { resizePreview(); } catch (e) { console.error(e); }
+            try { checkInApp(); } catch (e) { console.error(e); }
+            try { openNotice(); } catch (e) { console.error(e); }
+        }
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initApp);
+        } else {
+            initApp();
+        }
+        // 폰트/이미지까지 다 로드된 뒤 한 번 더 맞춰줌
+        window.addEventListener('load', () => {
+            try { updatePreview(); resizePreview(); } catch (e) { console.error(e); }
+        });
     </script>
 </body>
 </html>
