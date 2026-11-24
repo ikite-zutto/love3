@@ -415,6 +415,10 @@
                     <label>커미션주 이름 (쉼표(,)로 구분하여 여러 명 입력 가능)</label>
                     <input type="text" id="commissioner_name" class="form-control" placeholder="예: 닉네임1, 닉네임2" oninput="updatePreview()">
                 </div>
+                <div class="input-group mb-0 mt-4">
+                    <label>커미션주 글자 색상</label>
+                    <input type="color" id="commissioner_color" value="#ffffff" oninput="updatePreview()">
+                </div>
             </div>
 
             <!-- ==========================================
@@ -869,7 +873,7 @@
             }
 
             commissionerEl.className = `absolute bottom-6 z-30 text-[10px] font-medium tracking-[0.15em] whitespace-nowrap transition-all duration-300 ${fontBody} ${commAlignClass} ${commTransform}`;
-            commissionerEl.style.color = textColor;
+            commissionerEl.style.color = document.getElementById('commissioner_color').value;
             commissionerEl.style.opacity = '0.6';
             
             const hlHex = document.getElementById('hl_color').value;
