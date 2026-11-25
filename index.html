@@ -8,86 +8,163 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js"></script>
 
-    <!-- 폰트 로드 (기존 + 신규 폰트 대거 추가) -->
+    <!-- 폰트 로드 -->
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Great+Vibes&family=Noto+Serif+KR:wght@400;700;900&family=Gowun+Batang:wght@400;700&family=Nanum+Myeongjo:wght@400;700;800&family=Hahmlet:wght@400..900&family=Jua&family=Dongle:wght@300;400;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Cinzel:wght@400..900&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2212@1.0/KCC-eunyoung.woff2" rel="stylesheet">
 
     <style>
+        :root {
+            --ink: #0a0a0a;
+            --ink-2: #262626;
+            --mute: #737373;
+            --mute-2: #a3a3a3;
+            --line: #e5e5e5;
+            --line-2: #d4d4d4;
+            --paper: #fafafa;
+            --card: #ffffff;
+        }
+
         body { font-family: 'Pretendard', sans-serif; overflow: hidden; background-color: #f8fafc; }
 
         /* 커스텀 스크롤바 */
-        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        ::-webkit-scrollbar-thumb { background: #d4d4d4; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #a3a3a3; }
 
-        /* 빌더 UI 스타일 (모던 카드형) */
-        .section-title { font-weight: 800; font-size: 1.1rem; color: #0f172a; margin: 2.5rem 0 1rem 0; padding-bottom: 0.5rem; display: flex; align-items: center; gap: 8px; letter-spacing: -0.02em; }
-        .section-title::before { content: ''; display: block; width: 4px; height: 18px; background: #0f172a; border-radius: 2px; }
+        /* ==========================================
+           에디터 패널 (모노톤 리디자인)
+        =========================================== */
+        .ed-aside { background: var(--paper); border-color: var(--line); box-shadow: 0 0 40px rgba(0,0,0,0.12); }
 
-        .sub-group { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.02); transition: all 0.2s; }
-        .sub-group:hover { border-color: #cbd5e1; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.04); }
-        .sub-group-title { font-size: 0.75rem; font-weight: 700; color: #64748b; margin-bottom: 1rem; display: flex; align-items: center; text-transform: uppercase; letter-spacing: 0.05em; }
-        .sub-group-title::after { content: ''; flex-grow: 1; height: 1px; background: #f1f5f9; margin-left: 10px; }
+        .ed-header { background: var(--ink); color: #fff; }
+        .ed-header-title { font-weight: 800; letter-spacing: 0.02em; display: flex; align-items: center; gap: 10px; }
+        .ed-header-title .logo { width: 28px; height: 28px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.35); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
 
-        .input-group { margin-bottom: 1.2rem; }
+        .hd-btn { font-size: 0.72rem; font-weight: 700; padding: 0.5rem 0.75rem; border-radius: 8px; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s; cursor: pointer; white-space: nowrap; }
+        .hd-btn-ghost { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.3); }
+        .hd-btn-ghost:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.6); }
+        .hd-btn-solid { background: #fff; color: var(--ink); border: 1px solid #fff; }
+        .hd-btn-solid:hover { background: #e5e5e5; border-color: #e5e5e5; }
+
+        .swap-btn { width: 100%; margin-bottom: 1.5rem; background: var(--card); border: 1px solid var(--line-2); color: var(--ink-2); font-weight: 700; padding: 0.8rem; border-radius: 12px; font-size: 0.75rem; letter-spacing: 0.08em; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; cursor: pointer; }
+        .swap-btn:hover { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+        .section-title { font-weight: 800; font-size: 1rem; color: var(--ink); margin: 2.5rem 0 1rem 0; padding-bottom: 0.65rem; display: flex; align-items: center; gap: 10px; letter-spacing: -0.02em; border-bottom: 2px solid var(--ink); }
+        .section-title::before { content: ''; display: block; width: 8px; height: 8px; background: var(--ink); border-radius: 2px; flex-shrink: 0; }
+
+        .sub-group { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 1.25rem; margin-bottom: 1rem; box-shadow: 0 1px 2px rgba(0,0,0,0.03); transition: border-color 0.2s, box-shadow 0.2s; }
+        .sub-group:hover { border-color: var(--mute-2); box-shadow: 0 6px 18px -6px rgba(0,0,0,0.08); }
+        .sub-group-title { font-size: 0.68rem; font-weight: 800; color: var(--mute); margin-bottom: 1rem; display: flex; align-items: center; text-transform: uppercase; letter-spacing: 0.1em; }
+        .sub-group-title::after { content: ''; flex-grow: 1; height: 1px; background: var(--line); margin-left: 10px; }
+
+        .input-group { margin-bottom: 1.1rem; }
         .input-group:last-child { margin-bottom: 0; }
-        .input-group label { display: block; font-size: 0.75rem; font-weight: 600; color: #475569; margin-bottom: 0.5rem; }
+        .input-group label { display: block; font-size: 0.72rem; font-weight: 700; color: var(--ink-2); margin-bottom: 0.45rem; }
 
-        /* 🔥 입력창 & 드롭다운 공통 디자인 (거대해지는 문제 해결) 🔥 /
+        .row-label { font-size: 0.72rem; font-weight: 700; color: var(--ink-2); white-space: nowrap; }
+        .mini-label { font-size: 0.66rem; font-weight: 800; color: var(--mute); text-transform: uppercase; letter-spacing: 0.06em; }
+        .divider-top { border-top: 1px solid var(--line); padding-top: 1rem; }
+
+        /* 입력창 & 드롭다운 공통 디자인 */
         .form-control {
             width: 100%;
-            padding: 0.6rem 0.75rem;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            font-size: 0.8rem; / 글씨 크기를 작고 세련되게 고정 /
-            background-color: #f8fafc;
-            color: #1e293b;
+            padding: 0.62rem 0.8rem;
+            border: 1px solid var(--line-2);
+            border-radius: 10px;
+            font-size: 0.8rem;
+            line-height: 1.45;
+            background-color: var(--paper);
+            color: var(--ink);
             outline: none;
-            transition: all 0.2s;
-            -webkit-appearance: none; / iOS 기본 디자인 완벽 제거 /
+            transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
+            -webkit-appearance: none;
             appearance: none;
         }
+        .form-control::placeholder { color: var(--mute-2); }
+        .form-control:hover { border-color: var(--mute-2); }
         .form-control:focus {
-            border-color: #0f172a;
+            border-color: var(--ink);
             background-color: #ffffff;
-            box-shadow: 0 0 0 1px #0f172a;
+            box-shadow: 0 0 0 3px rgba(10,10,10,0.08);
         }
-        / Select(드롭다운) 전용 화살표 아이콘 추가 */
+        /* Select(드롭다운) 전용 화살표 아이콘 */
         select.form-control {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23525252'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2.5' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-position: right 0.75rem center;
-            background-size: 1rem;
-            padding-right: 2.5rem;
+            background-size: 0.9rem;
+            padding-right: 2.25rem;
             cursor: pointer;
+            font-weight: 600;
         }
 
         /* 커스텀 슬라이더 (Range) */
-        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
-        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 14px; width: 14px; border-radius: 50%; background: #0f172a; cursor: pointer; margin-top: -5px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: transform 0.1s; }
-        input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
-        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cursor: pointer; background: #e2e8f0; border-radius: 2px; }
+        input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; background: transparent; height: 20px; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%; background: var(--ink); border: 3px solid #fff; cursor: pointer; margin-top: -6px; box-shadow: 0 0 0 1px var(--ink), 0 2px 4px rgba(0,0,0,0.25); transition: transform 0.1s; }
+        input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.15); }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cursor: pointer; background: var(--line-2); border-radius: 2px; }
+        input[type=range]::-moz-range-thumb { height: 10px; width: 10px; border-radius: 50%; background: var(--ink); border: 3px solid #fff; cursor: pointer; box-shadow: 0 0 0 1px var(--ink); }
+        input[type=range]::-moz-range-track { width: 100%; height: 4px; cursor: pointer; background: var(--line-2); border-radius: 2px; }
         input[type=range]:focus { outline: none; }
 
         /* 커스텀 컬러 피커 */
-        input[type="color"] { -webkit-appearance: none; border: none; border-radius: 8px; overflow: hidden; padding: 0; cursor: pointer; height: 36px; width: 100%; }
+        input[type="color"] { -webkit-appearance: none; appearance: none; border: none; border-radius: 10px; overflow: hidden; padding: 0; cursor: pointer; height: 36px; width: 100%; background: transparent; }
         input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
-        input[type="color"]::-webkit-color-swatch { border: 1px solid #cbd5e1; border-radius: 8px; }
+        input[type="color"]::-webkit-color-swatch { border: 1px solid var(--line-2); border-radius: 10px; }
+        input[type="color"]::-moz-color-swatch { border: 1px solid var(--line-2); border-radius: 10px; }
 
         /* 버튼 스타일 */
-        .btn-outline { background: #ffffff; border: 1px solid #cbd5e1; color: #475569; padding: 0.5rem 0.75rem; border-radius: 8px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
-        .btn-outline:hover { background: #f8fafc; border-color: #94a3b8; color: #0f172a; }
-        .btn-danger { color: #ef4444; border-color: #fecaca; background: #fef2f2; }
-        .btn-danger:hover { background: #fee2e2; border-color: #fca5a5; color: #dc2626; }
+        .btn-outline { background: #ffffff; border: 1px solid var(--line-2); color: var(--ink-2); padding: 0.55rem 0.75rem; border-radius: 10px; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+        .btn-outline:hover { background: var(--ink); border-color: var(--ink); color: #fff; }
+        .btn-danger { color: var(--mute); background: var(--paper); border-color: var(--line-2); }
+        .btn-danger:hover { background: var(--ink-2); border-color: var(--ink-2); color: #fff; }
+        .btn-solid { background: var(--ink); color: #fff; border-color: var(--ink); }
+        .btn-solid:hover { background: var(--ink-2); border-color: var(--ink-2); }
 
-        /* 미리보기 캔버스 (정확한 7:5 비율 = 1400x1000) */
+        .add-song-btn { width: 100%; margin-top: 1.5rem; background: var(--ink); color: #fff; font-weight: 700; padding: 0.95rem; border-radius: 12px; font-size: 0.85rem; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; border: 1px solid var(--ink); }
+        .add-song-btn:hover { background: #fff; color: var(--ink); }
+
+        /* 안내 박스 */
+        .note-box { background: #f5f5f5; border: 1px solid var(--line); border-left: 3px solid var(--ink); padding: 1rem; border-radius: 12px; margin-bottom: 1.25rem; display: flex; gap: 12px; align-items: flex-start; }
+        .note-box .note-title { font-size: 0.75rem; font-weight: 800; color: var(--ink); margin-bottom: 0.25rem; }
+        .note-box .note-text { font-size: 0.7rem; color: var(--mute); line-height: 1.6; margin-bottom: 0.75rem; }
+        .note-box .note-text strong { color: var(--ink); }
+
+        /* 곡 카드 */
+        .song-card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 1.25rem; position: relative; box-shadow: 0 1px 2px rgba(0,0,0,0.03); transition: border-color 0.2s, box-shadow 0.2s; }
+        .song-card:hover { border-color: var(--mute-2); box-shadow: 0 6px 18px -6px rgba(0,0,0,0.08); }
+        .song-card.is-main { border-color: var(--ink); border-width: 1.5px; }
+        .song-card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--line); }
+        .song-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 0.75rem; font-weight: 800; color: var(--ink); }
+        .song-badge.main { background: var(--ink); color: #fff; padding: 0.25rem 0.65rem; border-radius: 999px; }
+        .icon-btn { background: var(--paper); border: 1px solid var(--line-2); width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 8px; color: var(--mute); font-size: 0.7rem; transition: all 0.2s; cursor: pointer; }
+        .icon-btn:hover { background: var(--ink); border-color: var(--ink); color: #fff; }
+        .del-btn { color: var(--mute); font-weight: 700; margin-left: 0.5rem; font-size: 0.72rem; display: flex; align-items: center; gap: 4px; cursor: pointer; transition: color 0.2s; }
+        .del-btn:hover { color: var(--ink); text-decoration: underline; }
+
+        /* 공지/저장 모달 공통 */
+        .modal-head { background: var(--ink); color: #fff; padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+        .modal-close { color: rgba(255,255,255,0.55); font-size: 1.6rem; line-height: 1; transition: color 0.2s; cursor: pointer; }
+        .modal-close:hover { color: #fff; }
+        .modal-foot { background: var(--paper); padding: 1rem 1.5rem; border-top: 1px solid var(--line); text-align: right; }
+        .modal-confirm { background: var(--ink); color: #fff; padding: 0.65rem 1.5rem; border-radius: 10px; font-weight: 700; font-size: 0.85rem; transition: background 0.2s; cursor: pointer; }
+        .modal-confirm:hover { background: var(--ink-2); }
+        .modal-body { color: var(--ink-2); }
+        .modal-body h3 { color: var(--ink); }
+        .status-msg { font-size: 0.7rem; font-weight: 700; margin-top: 0.5rem; min-height: 1rem; color: var(--ink); }
+
+        .notice-fab { background: var(--ink); color: #fff; border: 2px solid rgba(255,255,255,0.25); }
+
+        /* ==========================================
+           미리보기 캔버스 (정확한 7:5 비율 = 1400x1000)
+        =========================================== */
         #capture-area-container { display: flex; align-items: center; justify-content: center; }
         .preview-wrapper { width: 1400px; height: 1000px; position: relative; transform-origin: center; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); overflow: hidden; display: flex; flex-shrink: 0; transition: flex-direction 0.3s ease; }
 
-        /* 폰트 클래스 (신규 폰트 추가됨) */
+        /* 폰트 클래스 */
         .font-pretendard { font-family: 'Pretendard', sans-serif; }
         .font-notoserif { font-family: 'Noto Serif KR', serif; }
         .font-gowun { font-family: 'Gowun Batang', serif; }
@@ -132,19 +209,21 @@
 <body class="flex flex-col-reverse lg:flex-row h-[100dvh] w-screen">
 
     <!-- 왼쪽(모바일은 하단): 에디터 패널 -->
-    <aside id="editor-aside" class="w-full h-[55dvh] lg:w-[420px] lg:h-full bg-slate-50 border-t lg:border-t-0 lg:border-r border-slate-200 flex flex-col shadow-2xl z-50 shrink-0 relative">
+    <aside id="editor-aside" class="ed-aside w-full h-[55dvh] lg:w-[420px] lg:h-full border-t lg:border-t-0 lg:border-r flex flex-col z-50 shrink-0 relative">
         <!-- 헤더 영역 -->
-        <div class="p-4 lg:p-5 bg-slate-900 text-white flex justify-between items-center shrink-0 shadow-md z-10">
-            <h1 class="text-base lg:text-lg font-black tracking-wide flex items-center gap-2">
-                <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path></svg>
+        <div class="ed-header p-4 lg:p-5 flex justify-between items-center shrink-0 z-10">
+            <h1 class="ed-header-title text-base lg:text-lg">
+                <span class="logo">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path></svg>
+                </span>
                 페어 플리 메이커
             </h1>
             <div class="flex items-center gap-2">
-                <button onclick="openSaveModal()" class="bg-slate-700 hover:bg-slate-600 text-white text-xs font-bold py-2 px-3 rounded-lg transition-colors shadow-sm flex items-center gap-1.5">
+                <button onclick="openSaveModal()" class="hd-btn hd-btn-ghost">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
                     작업 저장/불러오기
                 </button>
-                <button onclick="downloadImage()" class="bg-indigo-500 hover:bg-indigo-600 text-white text-xs font-bold py-2 px-4 rounded-lg transition-colors shadow-sm flex items-center gap-1.5">
+                <button onclick="downloadImage()" class="hd-btn hd-btn-solid">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                     저장
                 </button>
@@ -153,8 +232,8 @@
 
         <div class="flex-1 overflow-y-auto p-4 lg:p-6 pb-24 custom-scroll" id="editor-form">
 
-            <button onclick="toggleLayout()" class="w-full mb-6 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-bold py-3 rounded-xl text-xs transition-all shadow-sm flex items-center justify-center gap-2 tracking-wider">
-                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+            <button onclick="toggleLayout()" class="swap-btn">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
                 좌우 레이아웃 반전 (SWAP)
             </button>
 
@@ -178,17 +257,17 @@
                         </button>
                     </div>
                 </div>
-                <div class="space-y-4 mt-4 border-t border-slate-100 pt-4">
+                <div class="space-y-4 mt-4 divider-top">
                     <div class="flex justify-between items-center gap-4">
-                        <span class="text-[11px] font-bold text-slate-500 whitespace-nowrap">크기 (0=꽉차게)</span>
+                        <span class="row-label">크기 (0=꽉차게)</span>
                         <input type="range" id="pair_img_scale" min="0" max="500" value="0" oninput="updatePreview()">
                     </div>
                     <div class="flex justify-between items-center gap-4">
-                        <span class="text-[11px] font-bold text-slate-500 whitespace-nowrap">좌우 위치</span>
+                        <span class="row-label">좌우 위치</span>
                         <input type="range" id="pair_img_pos_x" min="0" max="100" value="50" oninput="updatePreview()">
                     </div>
                     <div class="flex justify-between items-center gap-4">
-                        <span class="text-[11px] font-bold text-slate-500 whitespace-nowrap">상하 위치</span>
+                        <span class="row-label">상하 위치</span>
                         <input type="range" id="pair_img_pos_y" min="0" max="100" value="50" oninput="updatePreview()">
                     </div>
                 </div>
@@ -218,7 +297,7 @@
                 <span class="sub-group-title">텍스트 스타일 설정</span>
                 <div class="grid grid-cols-2 gap-3 mb-3">
                     <div class="flex flex-col gap-1.5">
-                        <span class="text-[10px] text-slate-500 font-bold uppercase">제목 폰트</span>
+                        <span class="mini-label">제목 폰트</span>
                         <select id="font_title" class="form-control" onchange="updatePreview()">
                             <option value="font-pretendard" selected>프리텐다드</option>
                             <option value="font-gmarket">지마켓산스</option>
@@ -236,7 +315,7 @@
                         </select>
                     </div>
                     <div class="flex flex-col gap-1.5">
-                        <span class="text-[10px] text-slate-500 font-bold uppercase">본문 폰트</span>
+                        <span class="mini-label">본문 폰트</span>
                         <select id="font_body" class="form-control" onchange="updatePreview()">
                             <option value="font-pretendard" selected>프리텐다드</option>
                             <option value="font-gmarket">지마켓산스</option>
@@ -264,18 +343,18 @@
                     </select>
                 </div>
 
-                <div class="grid grid-cols-2 gap-3 mb-4 border-t border-slate-100 pt-4">
+                <div class="grid grid-cols-2 gap-3 mb-4 divider-top">
                     <div class="flex flex-col gap-1.5">
-                        <span class="text-[10px] text-slate-500 font-bold uppercase">폰트 색상</span>
+                        <span class="mini-label">폰트 색상</span>
                         <input type="color" id="pair_text_color" value="#ffffff" oninput="updatePreview()">
                     </div>
                     <div class="flex flex-col gap-1.5">
-                        <span class="text-[10px] text-slate-500 font-bold uppercase">하단 그라데이션 색상</span>
+                        <span class="mini-label">하단 그라데이션 색상</span>
                         <input type="color" id="pair_overlay_color" value="#000000" oninput="updatePreview()">
                     </div>
                 </div>
                 <div class="flex justify-between items-center gap-4 mb-4">
-                    <span class="text-[11px] font-bold text-slate-500 whitespace-nowrap">그라데이션 진하기</span>
+                    <span class="row-label">그라데이션 진하기</span>
                     <input type="range" id="pair_overlay_opacity" min="0" max="200" value="95" oninput="updatePreview()">
                 </div>
 
@@ -292,31 +371,31 @@
                 <span class="sub-group-title">상세 간격 조절</span>
                 <div class="space-y-4">
                     <div class="flex justify-between items-center gap-4">
-                        <span class="text-[11px] font-bold text-slate-500 whitespace-nowrap">센터레터 크기</span>
+                        <span class="row-label">센터레터 크기</span>
                         <input type="range" id="size_center" min="10" max="40" value="14" oninput="updatePreview()">
                     </div>
                     <div class="flex justify-between items-center gap-4">
-                        <span class="text-[11px] font-bold text-slate-500 whitespace-nowrap">센터레터 상하 위치</span>
+                        <span class="row-label">센터레터 상하 위치</span>
                         <input type="range" id="pos_center" min="-100" max="100" value="0" oninput="updatePreview()">
                     </div>
                     <div class="flex justify-between items-center gap-4">
-                        <span class="text-[11px] font-bold text-slate-500 whitespace-nowrap">제목 크기</span>
+                        <span class="row-label">제목 크기</span>
                         <input type="range" id="size_title" min="20" max="100" value="56" oninput="updatePreview()">
                     </div>
                     <div class="flex justify-between items-center gap-4">
-                        <span class="text-[11px] font-bold text-slate-500 whitespace-nowrap">본문 크기</span>
+                        <span class="row-label">본문 크기</span>
                         <input type="range" id="size_body" min="12" max="60" value="24" oninput="updatePreview()">
                     </div>
                     <div class="flex justify-between items-center gap-4">
-                        <span class="text-[11px] font-bold text-slate-500 whitespace-nowrap">자간 (글자간격)</span>
+                        <span class="row-label">자간 (글자간격)</span>
                         <input type="range" id="spacing_letter" min="-0.1" max="0.5" step="0.01" value="0" oninput="updatePreview()">
                     </div>
                     <div class="flex justify-between items-center gap-4">
-                        <span class="text-[11px] font-bold text-slate-500 whitespace-nowrap">행간 (줄간격)</span>
+                        <span class="row-label">행간 (줄간격)</span>
                         <input type="range" id="spacing_line" min="1" max="3" step="0.1" value="1.4" oninput="updatePreview()">
                     </div>
                     <div class="flex justify-between items-center gap-4">
-                        <span class="text-[11px] font-bold text-slate-500 whitespace-nowrap">문단 간격</span>
+                        <span class="row-label">문단 간격</span>
                         <input type="range" id="spacing_para" min="0" max="80" value="16" oninput="updatePreview()">
                     </div>
                 </div>
@@ -339,7 +418,7 @@
                         </button>
                     </div>
                 </div>
-                <div class="grid grid-cols-2 gap-3 mb-3 border-t border-slate-100 pt-3">
+                <div class="grid grid-cols-2 gap-3 mb-3 divider-top">
                     <div class="input-group mb-0">
                         <label>배경 색상 (단색)</label>
                         <input type="color" id="bg_color" value="#e4e4e7" oninput="updatePreview()">
@@ -377,7 +456,7 @@
                     </div>
                 </div>
                 <div class="flex justify-between items-center gap-4">
-                    <span class="text-[11px] font-bold text-slate-500 whitespace-nowrap">사진 없을 때 색상</span>
+                    <span class="row-label">사진 없을 때 색상</span>
                     <input type="color" id="vinyl_color" value="#ff5555" class="w-1/2" oninput="updatePreview()">
                 </div>
             </div>
@@ -403,13 +482,13 @@
                         <option value="bold-italic">굵고 기울임</option>
                     </select>
                 </div>
-                <div class="space-y-4 border-t border-slate-100 pt-4">
+                <div class="space-y-4 divider-top">
                     <div class="flex justify-between items-center gap-4">
-                        <span class="text-[11px] font-bold text-slate-500 whitespace-nowrap">자간 (글자간격)</span>
+                        <span class="row-label">자간 (글자간격)</span>
                         <input type="range" id="pl_spacing_letter" min="-0.1" max="0.3" step="0.01" value="0" oninput="updatePreview()">
                     </div>
                     <div class="flex justify-between items-center gap-4">
-                        <span class="text-[11px] font-bold text-slate-500 whitespace-nowrap">행간 (가사 줄간격)</span>
+                        <span class="row-label">행간 (가사 줄간격)</span>
                         <input type="range" id="pl_spacing_line" min="1" max="2.5" step="0.1" value="1.6" oninput="updatePreview()">
                     </div>
                 </div>
@@ -433,14 +512,14 @@
             <div class="section-title mt-10">3. 플레이리스트 내용</div>
 
             <!-- 형광펜 안내 박스 -->
-            <div class="bg-indigo-50 border border-indigo-100 p-4 rounded-xl mb-5 flex gap-3 items-start">
-                <svg class="w-5 h-5 text-indigo-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <div class="note-box">
+                <svg class="w-5 h-5 shrink-0 mt-0.5" style="color:#0a0a0a" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 <div class="flex-1">
-                    <p class="text-[12px] text-indigo-900 font-bold mb-1">가사 형광펜 하이라이트</p>
-                    <p class="text-[11px] text-indigo-700/80 mb-3 leading-relaxed">가사 입력 시 문장 맨 앞에 <strong class="text-indigo-600">*</strong> 기호를 붙이면 그 줄에 형광펜이 그어집니다. (예: *여기에 가사를 입력하세요)</p>
-                    <div class="flex justify-between items-center border-t border-indigo-200/50 pt-3">
-                        <span class="text-[11px] font-bold text-indigo-900">형광펜 색상</span>
-                        <input type="color" id="hl_color" value="#ffeb3b" class="!h-6 !w-16 !p-0 border-none" oninput="updatePreview()">
+                    <p class="note-title">가사 형광펜 하이라이트</p>
+                    <p class="note-text">가사 입력 시 문장 맨 앞에 <strong>*</strong> 기호를 붙이면 그 줄에 형광펜이 그어집니다. (예: *여기에 가사를 입력하세요)</p>
+                    <div class="flex justify-between items-center pt-3" style="border-top:1px solid #e5e5e5;">
+                        <span class="row-label" style="color:#0a0a0a">형광펜 색상</span>
+                        <input type="color" id="hl_color" value="#ffeb3b" style="height:24px;width:64px;" oninput="updatePreview()">
                     </div>
                 </div>
             </div>
@@ -449,7 +528,7 @@
                 <!-- JS로 동적 렌더링 됨 -->
             </div>
 
-            <button type="button" onclick="addSong()" class="w-full mt-6 bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 rounded-xl text-sm transition-all shadow-md flex items-center justify-center gap-2">
+            <button type="button" onclick="addSong()" class="add-song-btn">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                 서브 곡 추가하기
             </button>
@@ -504,75 +583,75 @@
     </main>
 
     <!-- 공지사항 팝업 열기 버튼 -->
-    <button id="notice-btn" onclick="openNotice()" class="fixed bottom-6 left-6 bg-slate-900 text-white w-12 h-12 rounded-full shadow-xl flex items-center justify-center text-xl z-40 transition-transform hover:scale-110 border-2 border-white/20" title="공지사항">
+    <button id="notice-btn" onclick="openNotice()" class="notice-fab fixed bottom-6 left-6 w-12 h-12 rounded-full shadow-xl flex items-center justify-center text-xl z-40 transition-transform hover:scale-110" title="공지사항">
         📢
     </button>
 
     <!-- 공지사항 모달 창 -->
-    <div id="notice-modal" class="fixed inset-0 bg-slate-900/60 z-[100] flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 backdrop-blur-sm px-4">
+    <div id="notice-modal" class="fixed inset-0 bg-neutral-900/60 z-[100] flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 backdrop-blur-sm px-4">
         <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden transform scale-95 transition-transform duration-300" id="notice-content">
-            <div class="bg-slate-900 text-white px-6 py-4 flex justify-between items-center">
+            <div class="modal-head">
                 <h2 class="font-bold text-lg flex items-center gap-2">📢 공지사항</h2>
-                <button onclick="closeNotice()" class="text-slate-400 hover:text-white transition-colors text-2xl leading-none">&times;</button>
+                <button onclick="closeNotice()" class="modal-close">&times;</button>
             </div>
-            <div class="p-6 max-h-[65vh] overflow-y-auto text-sm text-slate-700 space-y-5">
+            <div class="modal-body p-6 max-h-[65vh] overflow-y-auto text-sm space-y-5">
                 <div>
-                    <h3 class="font-bold text-slate-900 mb-2 text-base">[이용 및 편집 관련 안내]</h3>
+                    <h3 class="font-bold mb-2 text-base">[이용 및 편집 관련 안내]</h3>
                     <ul class="list-disc pl-5 space-y-1.5 opacity-90">
                         <li><strong>최적화 환경:</strong> 본 틀은 PC 기준으로 제작되었습니다.</li>
                         <li>가급적 PC 이용을 부탁드립니다.</li>
                     </ul>
                 </div>
                 <div>
-                    <h3 class="font-bold text-slate-900 mb-2 text-base">[저장 방식 안내]</h3>
+                    <h3 class="font-bold mb-2 text-base">[저장 방식 안내]</h3>
                     <ul class="list-disc pl-5 space-y-1.5 opacity-90">
                         <li><strong>지원 형식:</strong> 이미지</li>
                         <li>이미지 저장 시 약간의 시간이 소요되므로 잠시 기다려 주세요.</li>
                     </ul>
                 </div>
             </div>
-            <div class="bg-slate-50 px-6 py-4 border-t border-slate-200 text-right">
-                <button onclick="closeNotice()" class="bg-slate-900 hover:bg-slate-800 text-white px-6 py-2.5 rounded-xl font-bold text-sm transition-colors shadow-sm">확인했습니다</button>
+            <div class="modal-foot">
+                <button onclick="closeNotice()" class="modal-confirm">확인했습니다</button>
             </div>
         </div>
     </div>
 
-    <!-- 작업 저장/불러오기 모달 창 (신규) -->
-    <div id="save-modal" class="fixed inset-0 bg-slate-900/60 z-[110] flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 backdrop-blur-sm px-4">
+    <!-- 작업 저장/불러오기 모달 창 -->
+    <div id="save-modal" class="fixed inset-0 bg-neutral-900/60 z-[110] flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 backdrop-blur-sm px-4">
         <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden transform scale-95 transition-transform duration-300" id="save-content">
-            <div class="bg-slate-900 text-white px-6 py-4 flex justify-between items-center">
+            <div class="modal-head">
                 <h2 class="font-bold text-lg flex items-center gap-2">💾 작업 저장 / 불러오기</h2>
-                <button onclick="closeSaveModal()" class="text-slate-400 hover:text-white transition-colors text-2xl leading-none">&times;</button>
+                <button onclick="closeSaveModal()" class="modal-close">&times;</button>
             </div>
-            <div class="p-6 max-h-[70vh] overflow-y-auto text-sm text-slate-700 space-y-5">
+            <div class="modal-body p-6 max-h-[70vh] overflow-y-auto text-sm space-y-5">
                 <div>
-                    <h3 class="font-bold text-slate-900 mb-1 text-sm">① 지금 작업 저장하기</h3>
-                    <p class="text-[11px] text-slate-500 mb-3 leading-relaxed">현재 입력한 내용·설정·곡 목록을 코드로 저장해요. 나중에 이 코드를 불러오면 그대로 복원돼요.</p>
-                    <label class="flex items-center gap-2 text-[12px] font-semibold text-slate-700 mb-3 cursor-pointer">
-                        <input type="checkbox" id="save_include_img" checked>
+                    <h3 class="font-bold mb-1 text-sm">① 지금 작업 저장하기</h3>
+                    <p class="text-[11px] mb-3 leading-relaxed" style="color:#737373">현재 입력한 내용·설정·곡 목록을 코드로 저장해요. 나중에 이 코드를 불러오면 그대로 복원돼요.</p>
+                    <label class="flex items-center gap-2 text-[12px] font-semibold mb-3 cursor-pointer">
+                        <input type="checkbox" id="save_include_img" checked style="accent-color:#0a0a0a">
                         이미지도 함께 저장 (끄면 코드가 훨씬 짧아져요)
                     </label>
                     <div class="flex gap-2">
                         <button type="button" onclick="copyProjectCode()" class="btn-outline flex-1">📋 코드 복사</button>
                         <button type="button" onclick="downloadProjectFile()" class="btn-outline flex-1">📄 파일로 저장</button>
                     </div>
-                    <p id="save_status" class="text-[11px] text-indigo-600 font-bold mt-2 min-h-[1rem]"></p>
+                    <p id="save_status" class="status-msg"></p>
                 </div>
 
-                <div class="border-t border-slate-200 pt-5">
-                    <h3 class="font-bold text-slate-900 mb-1 text-sm">② 저장한 작업 불러오기</h3>
-                    <p class="text-[11px] text-slate-500 mb-3 leading-relaxed">복사해 둔 코드를 붙여넣거나, 저장해 둔 파일을 선택하세요. 지금 작업 중인 내용은 덮어씌워져요.</p>
+                <div class="pt-5" style="border-top:1px solid #e5e5e5;">
+                    <h3 class="font-bold mb-1 text-sm">② 저장한 작업 불러오기</h3>
+                    <p class="text-[11px] mb-3 leading-relaxed" style="color:#737373">복사해 둔 코드를 붙여넣거나, 저장해 둔 파일을 선택하세요. 지금 작업 중인 내용은 덮어씌워져요.</p>
                     <textarea id="load_code_input" class="form-control h-24 resize-none mb-2" placeholder="여기에 저장한 코드를 붙여넣으세요 (PLM1:...)"></textarea>
                     <div class="flex gap-2">
-                        <button type="button" onclick="loadProjectFromText()" class="btn-outline flex-1" style="background:#0f172a;color:#fff;border-color:#0f172a;">코드로 불러오기</button>
+                        <button type="button" onclick="loadProjectFromText()" class="btn-outline btn-solid flex-1">코드로 불러오기</button>
                         <input type="file" id="load_file_input" accept=".txt,.json,text/plain,application/json" class="hidden" onchange="loadProjectFromFile(event)">
                         <button type="button" onclick="document.getElementById('load_file_input').click()" class="btn-outline flex-1">📂 파일로 불러오기</button>
                     </div>
-                    <p id="load_status" class="text-[11px] font-bold mt-2 min-h-[1rem]"></p>
+                    <p id="load_status" class="status-msg"></p>
                 </div>
             </div>
-            <div class="bg-slate-50 px-6 py-4 border-t border-slate-200 text-right">
-                <button onclick="closeSaveModal()" class="bg-slate-900 hover:bg-slate-800 text-white px-6 py-2.5 rounded-xl font-bold text-sm transition-colors shadow-sm">닫기</button>
+            <div class="modal-foot">
+                <button onclick="closeSaveModal()" class="modal-confirm">닫기</button>
             </div>
         </div>
     </div>
@@ -594,6 +673,15 @@
 
         const EMPTY_COVER = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiNlMmU4ZjAiLz48L3N2Zz4=';
 
+        // 입력창 value / textarea 안에 안전하게 넣기 위한 이스케이프
+        function escAttr(str) {
+            return String(str == null ? '' : str)
+                .replace(/&/g, '&amp;')
+                .replace(/"/g, '&quot;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+        }
+
         function openNotice() {
             const modal = document.getElementById('notice-modal');
             const content = document.getElementById('notice-content');
@@ -611,7 +699,7 @@
         }
 
         /* ==========================================
-           작업 저장 / 불러오기 (신규 기능)
+           작업 저장 / 불러오기
            - 입력창/슬라이더/색상/드롭다운 + 곡 목록 + 이미지를 코드로 변환
         =========================================== */
         function openSaveModal() {
@@ -636,7 +724,7 @@
         function setLoadStatus(msg, isError) {
             const el = document.getElementById('load_status');
             el.innerText = msg;
-            el.style.color = isError ? '#ef4444' : '#4f46e5';
+            el.style.color = isError ? '#525252' : '#0a0a0a';
         }
 
         // 현재 작업 전체를 코드 문자열로 만들기
@@ -854,16 +942,16 @@
             state.songs.forEach((song, i) => {
                 const isMain = song.isMain;
                 html += `
-                <div class="bg-white border border-slate-200 rounded-xl p-5 relative shadow-sm hover:shadow-md transition-shadow">
-                    <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">
-                        <span class="font-bold text-sm ${isMain ? 'text-indigo-600' : 'text-slate-800'} flex items-center gap-1.5">
+                <div class="song-card ${isMain ? 'is-main' : ''}">
+                    <div class="song-card-head">
+                        <span class="song-badge ${isMain ? 'main' : ''}">
                             ${isMain ? '👑 메인 곡' : '🎵 서브 곡'}
                         </span>
                         ${!isMain ? `
-                        <div class="flex gap-1.5">
-                            <button onclick="moveSong(${i}, -1)" class="bg-slate-50 hover:bg-slate-100 border border-slate-200 w-7 h-7 flex items-center justify-center rounded-md text-slate-500 transition-colors">▲</button>
-                            <button onclick="moveSong(${i}, 1)" class="bg-slate-50 hover:bg-slate-100 border border-slate-200 w-7 h-7 flex items-center justify-center rounded-md text-slate-500 transition-colors">▼</button>
-                            <button onclick="removeSong(${i})" class="text-red-500 font-bold ml-2 text-xs hover:underline flex items-center gap-1">
+                        <div class="flex gap-1.5 items-center">
+                            <button onclick="moveSong(${i}, -1)" class="icon-btn">▲</button>
+                            <button onclick="moveSong(${i}, 1)" class="icon-btn">▼</button>
+                            <button onclick="removeSong(${i})" class="del-btn">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                 삭제
                             </button>
@@ -883,14 +971,14 @@
                     </div>
 
                     <div class="grid grid-cols-2 gap-3 mb-2">
-                        <div class="input-group mb-0"><label>제목</label><input type="text" class="form-control" value="${song.title}" oninput="state.songs[${i}].title=this.value; updatePreview()"></div>
-                        <div class="input-group mb-0"><label>아티스트</label><input type="text" class="form-control" value="${song.artist}" oninput="state.songs[${i}].artist=this.value; updatePreview()"></div>
+                        <div class="input-group mb-0"><label>제목</label><input type="text" class="form-control" value="${escAttr(song.title)}" oninput="state.songs[${i}].title=this.value; updatePreview()"></div>
+                        <div class="input-group mb-0"><label>아티스트</label><input type="text" class="form-control" value="${escAttr(song.artist)}" oninput="state.songs[${i}].artist=this.value; updatePreview()"></div>
                     </div>
 
                     ${isMain ? `
-                    <div class="input-group mb-0 mt-4 border-t border-slate-100 pt-4">
+                    <div class="input-group mb-0 mt-4 divider-top">
                         <label>가사 / 코멘트 (맨 앞에 *를 붙이면 형광펜)</label>
-                        <textarea class="form-control h-24 resize-none" oninput="state.songs[${i}].lyrics=this.value; updatePreview()">${song.lyrics}</textarea>
+                        <textarea class="form-control h-24 resize-none" oninput="state.songs[${i}].lyrics=this.value; updatePreview()">${escAttr(song.lyrics)}</textarea>
                     </div>
                     ` : ''}
                 </div>`;
@@ -1085,7 +1173,7 @@
             const hlR = parseInt(hlHex.substr(1,2), 16);
             const hlG = parseInt(hlHex.substr(3,2), 16);
             const hlB = parseInt(hlHex.substr(5,2), 16);
-            const hlStyle = `background: linear-gradient(transparent 60%, rgba(${hlR},${hlG},${hlB},0.6) 60%); padding: 0 4px; border-radius: 2px;`;
+            const hlStyle = `background: linear-gradient(transparent 60%, rgba(${hlR},${hlG},${hlB},0.6) 60%); padding: 0 4px; border-radius: 2px; -webkit-box-decoration-break: clone; box-decoration-break: clone;`;
 
             let plHtml = '<div class="flex flex-col gap-5 w-full">';
 
@@ -1104,9 +1192,12 @@
                 const shapeClass = isMain ? 'shape-main' : (i%2===0 ? 'shape-sub' : 'shape-sub-alt');
 
                 if (isMain) {
-                    let parsedLyrics = song.lyrics.split('\n').map(line => {
-                        if (line.trim().startsWith('')) {
-                            return `<span style="${hlStyle}">${line.replace('', '').trim().replace(/</g, "&lt;")}</span>`;
+                    // 🔧 형광펜 버그 수정: 맨 앞이 '*' 인 줄만 형광펜 적용
+                    let parsedLyrics = (song.lyrics || '').split('\n').map(line => {
+                        const trimmed = line.trim();
+                        if (trimmed.startsWith('*')) {
+                            const text = trimmed.replace(/^\*+\s*/, '');
+                            return `<span style="${hlStyle}">${text.replace(/</g, "&lt;")}</span>`;
                         }
                         return line.replace(/</g, "&lt;");
                     }).join('<br>');
