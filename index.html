@@ -345,13 +345,25 @@
 
                 <div class="grid grid-cols-2 gap-3 mb-4 divider-top">
                     <div class="flex flex-col gap-1.5">
-                        <span class="mini-label">폰트 색상</span>
-                        <input type="color" id="pair_text_color" value="#ffffff" oninput="updatePreview()">
+                        <span class="mini-label">센터레터 색상</span>
+                        <input type="color" id="pair_center_color" value="#ffffff" oninput="updatePreview()">
                     </div>
                     <div class="flex flex-col gap-1.5">
-                        <span class="mini-label">하단 그라데이션 색상</span>
-                        <input type="color" id="pair_overlay_color" value="#000000" oninput="updatePreview()">
+                        <span class="mini-label">메인 제목 색상</span>
+                        <input type="color" id="pair_title_color" value="#ffffff" oninput="updatePreview()">
                     </div>
+                    <div class="flex flex-col gap-1.5">
+                        <span class="mini-label">서브 소개글 색상</span>
+                        <input type="color" id="pair_sub_color" value="#ffffff" oninput="updatePreview()">
+                    </div>
+                    <div class="flex flex-col gap-1.5">
+                        <span class="mini-label">캐치 프레이즈 색상</span>
+                        <input type="color" id="pair_catch_color" value="#ffffff" oninput="updatePreview()">
+                    </div>
+                </div>
+                <div class="flex flex-col gap-1.5 mb-4">
+                    <span class="mini-label">하단 그라데이션 색상</span>
+                    <input type="color" id="pair_overlay_color" value="#000000" oninput="updatePreview()">
                 </div>
                 <div class="flex justify-between items-center gap-4 mb-4">
                     <span class="row-label">그라데이션 진하기</span>
@@ -774,6 +786,14 @@
                 state.songs[0].isMain = true;
                 if (typeof state.songs[0].lyrics !== 'string') state.songs[0].lyrics = '';
             }
+            if (data.fields.pair_text_color) {
+                ['pair_center_color', 'pair_title_color', 'pair_sub_color', 'pair_catch_color'].forEach(cid => {
+                    if (!data.fields[cid]) {
+                        const el = document.getElementById(cid);
+                        if (el) el.value = data.fields.pair_text_color;
+                    }
+                });
+            }
             Object.keys(data.fields).forEach(id => {
                 const el = document.getElementById(id);
                 if (el && el.type !== 'file') el.value = data.fields[id];
@@ -1037,7 +1057,10 @@
 
             const textAlign = document.getElementById('text_align').value;
             const textShadow = document.getElementById('text_shadow').value;
-            const textColor = document.getElementById('pair_text_color').value;
+            const centerColor = document.getElementById('pair_center_color').value;
+            const titleColor = document.getElementById('pair_title_color').value;
+            const subColor = document.getElementById('pair_sub_color').value;
+            const catchColor = document.getElementById('pair_catch_color').value;
             const overlayColor = document.getElementById('pair_overlay_color').value;
             const overlayOpacitySlider = document.getElementById('pair_overlay_opacity').value;
             const overlayOpacityVal = Math.min(overlayOpacitySlider / 100, 1.0);
@@ -1063,8 +1086,12 @@
 
             document.getElementById('out_pair_gradient').style.background = `linear-gradient(to top, rgba(${overlayRgb}, ${overlayOpacityVal}) ${bottomStop}, rgba(${overlayRgb}, ${midOpacity}) 50%, transparent 100%)`;
 
+            centerEl.style.color = centerColor;
+            titleEl.style.color = titleColor;
+            subEl.style.color = subColor;
+            catchEl.style.color = catchColor;
+
             [centerEl, titleEl, subEl, catchEl].forEach(el => {
-                el.style.color = textColor;
                 el.classList.remove('text-shadow-heavy', 'text-shadow-light');
                 if(textShadow === 'dark') el.classList.add('text-shadow-heavy');
                 else if(textShadow === 'light') el.classList.add('text-shadow-light');
